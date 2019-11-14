@@ -18,11 +18,12 @@ class Email_builder extends AdminController {
     }
 
     public function index() {
+        if (!has_permission('email_templates', '', 'view')) {
+            access_denied('email_templates');
+        }
         $data['title'] = _l('email_builder');
-        // $data['runtime_js'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/runtime.*.js'), GLOB_NOSORT);
-        // $js_files = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
         $data['css_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.css'));
-        $data['js_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
+        // $data['js_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
         $this->load->view('email_builder', $data);
     }
 
