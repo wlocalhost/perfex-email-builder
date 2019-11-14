@@ -3,8 +3,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Email_builder extends AdminController {
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
 
         if (!has_permission('email_templates', '', 'view')) {
@@ -18,9 +17,12 @@ class Email_builder extends AdminController {
         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
-    public function index()
-    {
+    public function index() {
         $data['title'] = _l('email_builder');
+        // $data['runtime_js'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/runtime.*.js'), GLOB_NOSORT);
+        // $js_files = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
+        $data['css_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.css'));
+        $data['js_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
         $this->load->view('email_builder', $data);
     }
 
