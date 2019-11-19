@@ -4,6 +4,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 Module Name: Perfex Email Builder
+Module URI: https://help.perfexcrm.com
+Author: Ion Prodan
+Author URI: https://dev.to/wanoo21
 Description: Create beautiful and fully-responsive email templates
 Version: 1.0.0
 Requires at least: 2.3.*
@@ -36,12 +39,29 @@ function before_parse_email_template_message($template) {
 function email_builder_init_menu_items() {
     if (has_permission('email_builder', '', 'view')) {
         $CI = &get_instance();
-        $CI->app_menu->add_setup_menu_item(EMAIL_BUILDER_MODULE_NAME.'-options', [
+        $CI->app_menu->add_setup_menu_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
             'name'     => _l('email-builder'),
+            'collapse' => true,
             // 'permissions' => 'email-templates',
             // 'icon'     => 'fa fa-envelope',
-            'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME),
+            // 'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME),
             'position' => 35,
+        ]);
+
+        $CI->app_menu->add_setup_children_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
+            'slug'     => 'email-builder.start', // Required ID/slug UNIQUE for the child menu
+            'name'     => _l('email-builder.start'), // The name if the item
+            'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME), // URL of the item
+            // 'position' => 5, // The menu position
+            // 'icon'     => 'fa fa-exclamation', // Font awesome icon
+        ]);
+
+        $CI->app_menu->add_setup_children_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
+            'slug'     => 'email-builder.settings', // Required ID/slug UNIQUE for the child menu
+            'name'     => _l('email-builder.settings'), // The name if the item
+            'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME . '/settings'), // URL of the item
+            // 'position' => 5, // The menu position
+            // 'icon'     => 'fa fa-exclamation', // Font awesome icon
         ]);
     }
 }

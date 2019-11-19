@@ -34,6 +34,16 @@ class Email_builder extends AdminController {
         $this->load->view('email_builder', $data);
     }
 
+    public function settings() {
+        if (!has_permission('email_templates', '', 'view')) {
+            access_denied('email_templates');
+        }
+        $data['title'] = _l('email_builder.settings');
+        // $data['css_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.css'));
+        // $data['js_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
+        $this->load->view('email_builder_settings', $data);
+    }
+
     public function templates() {
         $data = $this->emailBuilder_module->get(['type' => $this->input->get('type'), 'language' => $this->input->get('language')]);
         return $this->json_output($data);
