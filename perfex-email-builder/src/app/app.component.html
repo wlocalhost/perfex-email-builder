@@ -1,1 +1,86 @@
-<ip-email-builder></ip-email-builder>
+<ip-email-builder *ngIf="startedBuilding | async">
+  <div class="top-actions">
+    <button mat-stroked-button color="primary" (click)="saveEmail()">
+      {{ 'perfex.builder.saveEmail' | translate }}
+    </button>
+  </div>
+</ip-email-builder>
+<div
+  class="perfex-email-builder"
+  *ngIf="!(startedBuilding | async)"
+  fxLayout
+  fxLayoutAlign="center center"
+>
+  <mat-card fxFlex="500px">
+    <mat-card-header>
+      <mat-card-title>{{ 'perfex.start.h1' | translate }}</mat-card-title>
+      <mat-card-subtitle *ngIf="perfexEmail">
+        {{ perfexEmail.name }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content fxLayout="column" fxLayoutGap="1rem">
+      <div fxLayout fxLayoutGap="1rem">
+        <mat-form-field fxFlex>
+          <mat-label>{{ 'perfex.start.type' | translate }}</mat-label>
+          <mat-select
+            [(ngModel)]="currentEmail.type"
+            (selectionChange)="getEmail()"
+          >
+            <mat-option *ngFor="let type of types" [value]="type">
+              {{ type | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field fxFlex>
+          <mat-label>{{ 'perfex.start.language' | translate }}</mat-label>
+          <mat-select
+            [(ngModel)]="currentEmail.language"
+            (selectionChange)="getEmail()"
+          >
+            <mat-option *ngFor="let lang of languages" [value]="lang">
+              {{ lang | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- <div fxLayout fxLayoutGap="1rem" *ngIf="perfexEmail"> -->
+      <mat-form-field fxFlex *ngIf="perfexEmail">
+        <mat-label>{{ 'perfex.start.fromName' | translate }}</mat-label>
+        <input matInput required [(ngModel)]="perfexEmail.fromname" />
+      </mat-form-field>
+      <!-- <button mat-icon-button color="accent">
+          <mat-icon>info</mat-icon>
+        </button> -->
+      <!-- </div> -->
+
+      <mat-form-field *ngIf="perfexEmail">
+        <mat-label>{{ 'perfex.start.subject' | translate }}</mat-label>
+        <textarea matInput [(ngModel)]="perfexEmail.subject"></textarea>
+      </mat-form-field>
+
+      <div class="merge-fields" *ngIf="mergeFields.length">
+        <mat-chip-list>
+          <mat-chip *ngFor="let field of mergeFields" color="primary">
+            {{ field.name }}: &nbsp;
+            <span class="force-select">{{ field.key }}</span>
+          </mat-chip>
+        </mat-chip-list>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions fxLayout>
+      <button
+        mat-button
+        color="primary"
+        *ngIf="perfexEmail"
+        (click)="startBuilding()"
+        style="margin-left: auto"
+      >
+        {{ 'perfex.start.start' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

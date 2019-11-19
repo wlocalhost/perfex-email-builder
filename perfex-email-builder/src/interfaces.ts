@@ -1,5 +1,8 @@
+import { IPEmail } from 'ip-email-builder';
+
 export interface IPerfexEmail {
   active: string;
+  emailObject: IPEmail;
   emailtemplateid: string;
   fromemail: string;
   fromname: string;

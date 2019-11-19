@@ -1,0 +1,6 @@
+{
+  "/admin": {
+    "target": "http://localhost:8888/perfex/",
+    "secure": false
+  }
+}
