@@ -15,6 +15,7 @@ Requires at least: 2.3.*
 define('EMAIL_BUILDER_MODULE_NAME', 'email_builder');
 
 hooks()->add_action('admin_init', 'email_builder_init_menu_items');
+// hooks()->add_action('app_admin_head', 'theme_scripts_admin_head');
 hooks()->add_action('before_tickets_email_templates', 'before_tickets_email_templates');
 hooks()->add_filter('module_email_builder_action_links', 'email_builder_setup_action_links');
 
@@ -36,9 +37,15 @@ function before_parse_email_template_message($template) {
     return $template;
 }
 
+// function theme_scripts_admin_head() {
+//     echo '<script>console.log(location)</script>';
+// }
+
 function email_builder_init_menu_items() {
+    $CI = &get_instance();
+    $CI->app_scripts->add('email-builder-js', module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/js/simple-fns.js'));
+
     if (has_permission('email_builder', '', 'view')) {
-        $CI = &get_instance();
         $CI->app_menu->add_setup_menu_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
             'name'     => _l('email-builder'),
             'collapse' => true,
@@ -67,7 +74,7 @@ function email_builder_init_menu_items() {
 }
 
 function before_tickets_email_templates() {
-    return '<p>Edit into email builder</p>';
+    echo '<div class="col-md-6 col-md-offset-3 col-xs-12 col-xs-offset-0"><div class="alert alert-warning">Edit into email builder</div></div>';
 }
 
 /**
