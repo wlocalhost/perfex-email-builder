@@ -28,22 +28,27 @@ class EmailBuilder_module extends App_Model {
         $_data             = [];
         $_data['fromname'] = $data['fromname'];
         $_data['subject']  = $data['subject'];
-        $_data['message']   = $data['htmlTemplate'];
+        // $_data['message']   = $data['htmlTemplate'];
         // $_data['plaintext'] = $data['plaintext'];
         // $_data['active']    = $data['active'];
 
         $this->db->where('emailtemplateid', $data['emailtemplateid']);
         if ($this->db->update($this->emailTplsTable, $_data)) {
             // Insert into perfex database
-            $emailObject = json_encode(json_decode(stripslashes($data['emailObject']), true));
 
-            // return $emailObject;
+            // $my_array = json_decode(str_replace ('\"','"', $json_string), true);
+            $emailObject = json_encode(json_decode(stripslashes($data['emailObject']), true));
+            $template = htmlspecialchars($data['htmlTemplate']);
+
+            // return $data['emailtemplateid'];
 
             $this->db->where('emailtemplateid', $data['emailtemplateid']);
             if ($this->db->get($this->emailBuilderTable)->row()) {
-                $success = $this->db->update($this->emailBuilderTable, ['emailObject' => $emailObject]);
+                $this->db->where('emailtemplateid', $data['emailtemplateid']);
+                $success = $this->db->update($this->emailBuilderTable, ['emailObject' => $emailObject, 'template' => $template]);
             } else {
-                $success = $this->db->insert($this->emailBuilderTable, ['emailObject' => $emailObject, 'emailtemplateid' => $data['emailtemplateid']]);
+                $this->db->where('emailtemplateid', $data['emailtemplateid']);
+                $success = $this->db->insert($this->emailBuilderTable, ['emailObject' => $emailObject, 'template' => $template, 'emailtemplateid' => $data['emailtemplateid']]);
             }
             return $success;
         }

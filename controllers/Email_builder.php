@@ -40,11 +40,19 @@ class Email_builder extends AdminController {
     }
 
     public function update() {
+        // return $this->json_output(['template' => $this->input->post('htmlTemplate', false)]);
+
         if ($this->input->post() && $this->input->post('emailtemplateid') && $this->input->post('emailObject')) {
             if (!has_permission('email_templates', '', 'edit')) {
                 access_denied('email_templates');
             }
-            $success = $this->emailBuilder_module->update($this->input->post());
+            
+            $data = $this->input->post();
+            $data['htmlTemplate'] = $this->input->post('htmlTemplate', false);
+
+            // return $this->json_output(['data' => $data]);
+
+            $success = $this->emailBuilder_module->update($data);
             return $this->json_output(['success' => $success]);
         }
     }

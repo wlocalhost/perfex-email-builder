@@ -17,7 +17,7 @@ const { API_BASE = '/admin/email_builder/' } = GlobalVariable;
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   types = [
     'staff',
     'credit_note',
@@ -105,14 +105,6 @@ export class AppComponent implements OnInit {
     this.startedBuilding.next(true);
   }
 
-  ngOnInit() {
-    // this.ngb.onChanges$().subscribe(([Email, Template]) => {
-    //   if (Template) {
-    //     return this.saveEmail([Email, Template]).subscribe();
-    //   }
-    // });
-  }
-
   async saveEmail() {
     if (!this.ngb.hasChanges) {
       return this.ngb.snackBar.open(
@@ -130,7 +122,7 @@ export class AppComponent implements OnInit {
     const formData = new FormData();
     formData.append(
       'csrf_token_name',
-      GlobalVariable.CSRF || '5550537b7509b75d3f72b8e9740b3c7a'
+      GlobalVariable.CSRF || '06dde7a267511f223617e49d969cf386'
     );
     formData.append('fromname', fromname);
     formData.append('subject', subject);
