@@ -15,7 +15,7 @@ Requires at least: 2.3.*
 define('EMAIL_BUILDER_MODULE_NAME', 'email_builder');
 
 hooks()->add_action('admin_init', 'email_builder_init_menu_items');
-// hooks()->add_action('app_admin_head', 'theme_scripts_admin_head');
+hooks()->add_action('app_admin_head', 'theme_scripts_admin_head');
 hooks()->add_action('before_tickets_email_templates', 'before_tickets_email_templates');
 hooks()->add_filter('module_email_builder_action_links', 'email_builder_setup_action_links');
 
@@ -37,9 +37,9 @@ function before_parse_email_template_message($template) {
     return $template;
 }
 
-// function theme_scripts_admin_head() {
-//     echo '<script>console.log(location)</script>';
-// }
+function theme_scripts_admin_head() {
+    echo '<base href="'.module_dir_url('email_builder', 'assets/perfex-email-builder/').'">' . PHP_EOL;
+}
 
 function email_builder_init_menu_items() {
     $CI = &get_instance();

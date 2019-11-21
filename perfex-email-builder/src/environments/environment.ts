@@ -3,6 +3,14 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  globalVariable: {
+    API_BASE: '/admin/email_builder',
+    CSRF: {
+      name: 'csrf_token_name',
+      token: '164a0cd68d304ee3cd08cc029962ad79'
+    },
+    ...(window as any).GlobalVariable
+  },
   production: false,
 };
 

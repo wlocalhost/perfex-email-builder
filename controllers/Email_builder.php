@@ -5,7 +5,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Email_builder extends AdminController {
 
     public function __construct() {
-        $config['csrf_regenerate'] = FALSE;
         parent::__construct();
 
         if (!has_permission('email_templates', '', 'view')) {
@@ -13,6 +12,7 @@ class Email_builder extends AdminController {
         }
 
         $this->load->model('emailBuilder_module');
+        // $this->load->library('upload');
     }
 
     protected function json_output($data) {
@@ -64,6 +64,24 @@ class Email_builder extends AdminController {
 
             $success = $this->emailBuilder_module->update($data);
             return $this->json_output(['success' => $success]);
+        }
+    }
+
+    public function upload() {
+        $config['upload_path'] = './images/';
+        $config['allowed_types'] = 'gif|jpg|png';
+        $config['max_size'] = 2000;
+        $config['max_width'] = 1500;
+        $config['max_height'] = 1500;
+
+        $this->load->library('upload', $config);
+
+        if (!$this->upload->do_upload('image')) {
+            $error = array('error' => $this->upload->display_errors());
+            return $this->json_output($error);
+        } else {
+            $data = array('image_metadata' => $this->upload->data());
+            return $this->json_output($data);
         }
     }
 }

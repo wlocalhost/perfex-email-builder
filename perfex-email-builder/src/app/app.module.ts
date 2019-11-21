@@ -10,10 +10,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
-
-import { IpEmailBuilderModule } from 'ip-email-builder';
-import { AppComponent } from './app.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+import { IpEmailBuilderModule, ImageUploader } from 'ip-email-builder';
+import { UploadImageService } from './app.upload.service';
+import { AppComponent } from './app.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +24,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     IpEmailBuilderModule.forRoot({
       xApiKey: 'ULMnDh2ens78ge40yU29Q7bbF6r0N5B96VNbebCJ',
       useDownloadButton: false,
-      useSaveButton: false,
+      useSaveButton: false
     }),
     MatInputModule,
     MatSelectModule,
@@ -35,9 +36,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     FormsModule,
     TranslateModule,
     MatTooltipModule,
-    MatChipsModule,
+    MatChipsModule
   ],
-  providers: [],
-  bootstrap: [AppComponent],
+  providers: [{
+    provide: ImageUploader, useClass: UploadImageService
+  }],
+  bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
