@@ -12,9 +12,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { IpEmailBuilderModule, ImageUploader } from 'ip-email-builder';
+import { IpEmailBuilderModule, ImageUploader, IP_CONFIG } from 'ip-email-builder';
 import { UploadImageService } from './app.upload.service';
 import { AppComponent } from './app.component';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,8 +24,8 @@ import { AppComponent } from './app.component';
     BrowserAnimationsModule,
     IpEmailBuilderModule.forRoot({
       xApiKey: 'ULMnDh2ens78ge40yU29Q7bbF6r0N5B96VNbebCJ',
-      useDownloadButton: false,
-      useSaveButton: false
+      // useDownloadButton: false,
+      // useSaveButton: false
     }),
     MatInputModule,
     MatSelectModule,
@@ -39,7 +40,15 @@ import { AppComponent } from './app.component';
     MatChipsModule
   ],
   providers: [{
-    provide: ImageUploader, useClass: UploadImageService
+    // environment.globalVariable.CSRF.name, environment.globalVariable.CSRF.token
+    // provide: ImageUploader, useClass: UploadImageService
+    provide: IP_CONFIG, useValue: {
+      xApiKey: 'ULMnDh2ens78ge40yU29Q7bbF6r0N5B96VNbebCJ',
+      useDownloadButton: false,
+      useSaveButton: false,
+      uploadImagePath: `${environment.globalVariable.API_BASE}/upload`,
+      csrf: { name: environment.globalVariable.CSRF.name, token: environment.globalVariable.CSRF.token }
+    }
   }],
   bootstrap: [AppComponent]
 })
