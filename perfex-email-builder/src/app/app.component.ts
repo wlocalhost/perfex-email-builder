@@ -63,7 +63,7 @@ export class AppComponent {
   };
   mergeFields = [];
 
-  perfexEmail: IPerfexEmail;
+  perfexEmail: IPerfexEmail = null;
   startedBuilding = new BehaviorSubject(false);
 
   constructor(private ngb: IpEmailBuilderService, private http: HttpClient) { }
@@ -135,5 +135,12 @@ export class AppComponent {
         duration: 3000
       });
     }
+  }
+
+  chooseAnotherTemplate() {
+    this.currentEmail.type = '';
+    this.perfexEmail = null;
+    this.mergeFields = [];
+    this.startedBuilding.next(false);
   }
 }

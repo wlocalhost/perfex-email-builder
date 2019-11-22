@@ -69,7 +69,7 @@ class Email_builder extends AdminController {
 
     public function upload() {
         $config['upload_path'] = module_dir_path('email_builder', 'assets/upload');
-        $config['allowed_types'] = 'jpg|jpeg|png|gif|JPEG|JPG';
+        $config['allowed_types'] = 'jpg|jpeg|png|gif';
         $config['encrypt_name'] = TRUE;
         // $config['max_size'] = 2000;
         // $config['max_width'] = 1500;
@@ -78,7 +78,7 @@ class Email_builder extends AdminController {
         $this->load->library('upload', $config);
 
         if (!$this->upload->do_upload('image')) {
-            $error = array('error' => $this->upload->display_errors());
+            $error = array('error' => $this->upload->display_errors('', ''), 'success' => false);
             return $this->json_output($error);
         } else {
             // $data = array('image_metadata' => $this->upload->data());

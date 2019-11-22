@@ -118,8 +118,6 @@ THE SOFTWARE.
 
 @angular/material/card
 
-@angular/material/chips
-
 @angular/material/core
 
 @angular/material/dialog

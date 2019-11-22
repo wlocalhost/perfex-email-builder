@@ -12,8 +12,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { IpEmailBuilderModule, ImageUploader, IP_CONFIG } from 'ip-email-builder';
-import { UploadImageService } from './app.upload.service';
+import { IpEmailBuilderModule, IP_CONFIG } from 'ip-email-builder';
+// import { UploadImageService } from './app.upload.service';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 
