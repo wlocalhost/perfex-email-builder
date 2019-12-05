@@ -4,6 +4,7 @@
 <div id="wrapper">
     <?php hooks()->do_action('before_start_perfex_email_builder'); ?>
     <app-root style="max-height: calc(100vh - 63px);"></app-root>
+    <div class="clearfix"></div>
     <?php hooks()->do_action('after_start_perfex_email_builder'); ?>
 </div>
 <script>
