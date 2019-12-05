@@ -23,9 +23,7 @@ import { environment } from '../environments/environment';
     BrowserModule,
     BrowserAnimationsModule,
     IpEmailBuilderModule.forRoot({
-      xApiKey: 'ULMnDh2ens78ge40yU29Q7bbF6r0N5B96VNbebCJ',
-      // useDownloadButton: false,
-      // useSaveButton: false
+      xApiKey: '',
     }),
     MatInputModule,
     MatSelectModule,

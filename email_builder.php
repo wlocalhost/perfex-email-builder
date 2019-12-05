@@ -9,7 +9,7 @@ Author: Ion Prodan
 Author URI: https://dev.to/wanoo21
 Description: Create beautiful and fully-responsive email templates
 Version: 1.0.0
-Requires at least: 2.3.*
+Requires at least: 2.4.*
 */
 
 define('EMAIL_BUILDER_MODULE_NAME', 'email_builder');
@@ -38,7 +38,7 @@ function before_parse_email_template_message($template) {
 }
 
 function theme_scripts_admin_head() {
-    echo '<base href="'.module_dir_url('email_builder', 'assets/perfex-email-builder/').'">' . PHP_EOL;
+    // echo '<base href="'.module_dir_url('email_builder', 'assets/perfex-email-builder/').'">' . PHP_EOL;
 }
 
 function email_builder_init_menu_items() {

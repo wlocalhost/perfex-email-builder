@@ -5,6 +5,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 // add_option('direct_links_from_email_templates_page', 'true');
 add_option('old_email_header', get_option('email_header'));
 add_option('old_email_footer', get_option('email_footer'));
+add_option('email_builder_default_media_folder', 'perfex-email-builder');
 update_option('email_header', '<!-- Handled by Email Builder -->');
 update_option('email_footer', '<!-- Handled by Email Builder -->');
 

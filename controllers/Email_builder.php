@@ -68,10 +68,20 @@ class Email_builder extends AdminController {
     }
 
     public function upload() {
-        $config['upload_path'] = module_dir_path('email_builder', 'assets/upload');
+        $this->load->helper('path');
+        // $config['upload_path'] = module_dir_path('email_builder', 'assets/upload');
+        $media_folder = $this->app->get_media_folder();
+        $defaultMediaFolder =  '/' . get_option('email_builder_default_media_folder') . '/';
+        $mediaPath    = FCPATH . $media_folder . $defaultMediaFolder;
+
+        if (!is_dir($mediaPath)) {
+            mkdir($mediaPath, 0755);
+        }
+
+        $config['upload_path'] = set_realpath($media_folder . $defaultMediaFolder, true);
         $config['allowed_types'] = 'jpg|jpeg|png|gif';
         $config['encrypt_name'] = TRUE;
-        // $config['max_size'] = 2000;
+        $config['max_size'] = get_option('media_max_file_size_upload') * 1000;
         // $config['max_width'] = 1500;
         // $config['max_height'] = 1500;
 
@@ -79,10 +89,15 @@ class Email_builder extends AdminController {
 
         if (!$this->upload->do_upload('image')) {
             $error = array('error' => $this->upload->display_errors('', ''), 'success' => false);
+            // $error['URL'] = site_url($media_folder) . '/';
+            // $error['max_size'] = $config['max_size'];
             return $this->json_output($error);
         } else {
             // $data = array('image_metadata' => $this->upload->data());
-            return $this->json_output(['success' => true, 'path' => module_dir_url('email_builder', 'assets/upload/'.$this->upload->data('file_name'))]);
+            // $data['URL'] = site_url($media_folder) . '/';
+
+            // return $this->json_output($data);
+            return $this->json_output(['success' => true, 'path' => site_url($media_folder) . $defaultMediaFolder . $this->upload->data('file_name')]);
         }
     }
 }

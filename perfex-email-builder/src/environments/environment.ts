@@ -7,7 +7,7 @@ export const environment = {
     API_BASE: '/admin/email_builder',
     CSRF: {
       name: 'csrf_token_name',
-      token: 'a7733edebc9f6bd5310871ca47d09821'
+      token: 'e0434ec87cb5088244fd681842239268'
     },
     ...(window as any).GlobalVariable
   },
