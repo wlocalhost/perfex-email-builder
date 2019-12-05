@@ -7,7 +7,7 @@ Module Name: Perfex Email Builder
 Module URI: https://help.perfexcrm.com
 Author: Ion Prodan
 Author URI: https://dev.to/wanoo21
-Description: Create beautiful and fully-responsive email templates
+Description: Beautiful e-mail templates, with no design experience needed.
 Version: 1.0.0
 Requires at least: 2.4.*
 */

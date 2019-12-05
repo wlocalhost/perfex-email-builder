@@ -6,13 +6,10 @@ class Perfex_email_builder extends AdminController {
 
     public function __construct() {
         parent::__construct();
-
         if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
         }
-
         $this->load->model('emailBuilder_module');
-        // $this->load->library('upload');
     }
 
     protected function json_output($data) {
@@ -62,8 +59,6 @@ class Perfex_email_builder extends AdminController {
     }
 
     public function update() {
-        // return $this->json_output(['template' => $this->input->post('htmlTemplate', false)]);
-
         if ($this->input->post() && $this->input->post('emailtemplateid') && $this->input->post('emailObject')) {
             if (!has_permission('email_templates', '', 'edit')) {
                 access_denied('email_templates');
