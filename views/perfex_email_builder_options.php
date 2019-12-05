@@ -7,16 +7,16 @@
             <?php hooks()->do_action('before_options_perfex_email_builder'); ?>
             <div class="col-md-3">
                 <ul class="nav navbar-pills navbar-pills-flat nav-tabs nav-stacked">
-                    <li><a href="#"><?php echo _l('general'); ?></a></li>
-                    <li class="disabled"><a href="#"><?php echo _l('inject_code_admin'); ?> (In Development)</a></li>
-                    <li class="disabled"><a href="#"><?php echo _l('inject_code_client'); ?> (In Development)</a></li>
+                    <li class="active"><a href="<?php echo admin_url(EMAIL_BUILDER_MODULE_NAME . '/options'); ?>"><?php echo _l('general'); ?></a></li>
+                    <li class="disabled"><a href="<?php echo admin_url(EMAIL_BUILDER_MODULE_NAME . '/options?group=admin-code'); ?>" class="disabled"><?php echo _l('inject_code_admin'); ?> (In Development)</a></li>
+                    <li class="disabled"><a href="<?php echo admin_url(EMAIL_BUILDER_MODULE_NAME . '/options?group=client-code'); ?>" class="disabled"><?php echo _l('inject_code_client'); ?> (In Development)</a></li>
                 </ul>
             </div>
             <div class="col-md-9">
                 <div class="panel_s">
                     <div class="panel-body">
                         <div class="tab-pane" role="tabpanel">
-                            <div id="alert-info" style="display: none;" class="alert alert-dismissible"> 
+                            <div id="alert-info" style="display: none;" role="alert" class="alert alert-dismissible"> 
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 <span class="alert-content"></span>
                             </div>

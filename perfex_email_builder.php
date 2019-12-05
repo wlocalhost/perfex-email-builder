@@ -97,7 +97,7 @@ function email_builder_init_menu_items() {
 }
 
 function before_tickets_email_templates() {
-    echo '<div class="col-md-6 col-md-offset-3 col-xs-12 col-xs-offset-0"><div class="alert alert-warning">' . _l('email_templates_top_alert') . '</div></div>';
+    echo '<div class="col-md-8 col-md-offset-2 col-xs-12 col-xs-offset-0 text-center"><div class="alert alert-warning">' . _l('email_templates_top_alert') . '</div></div>';
 }
 
 /**
@@ -114,7 +114,6 @@ function email_builder_setup_action_links($actions) {
 * Register activation module hook
 */
 register_activation_hook(EMAIL_BUILDER_MODULE_NAME, 'email_builder_activation_hook');
-
 function email_builder_activation_hook() {
     $CI = &get_instance();
     require_once(__DIR__ . '/install.php');
