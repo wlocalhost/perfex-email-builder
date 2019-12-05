@@ -29,6 +29,9 @@ class Perfex_email_builder extends AdminController {
         }
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
         $data['available_merge_fields'] = $this->app_merge_fields->all();
+
+        // $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
+
         hooks()->add_action('app_admin_head', 'perfex_email_builder_head_styles');
         hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');
         // $data['css_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.css'));

@@ -40,19 +40,23 @@ function before_parse_email_template_message($template) {
 // $isModulePage = strpos(base_url(uri_string()), EMAIL_BUILDER_MODULE_NAME);
 
 function perfex_email_builder_head_styles() {
-    echo '<base href="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/') . '">' . PHP_EOL;
-    echo '<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />' . PHP_EOL;
-    echo '<link href="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/styles.css'). '" rel="stylesheet">' . PHP_EOL;
+    $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
+
+    echo '<base href="' . $builderAssetsPath . '/">' . PHP_EOL;
+    echo '<link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />' . PHP_EOL;
+    echo '<link href="' . $builderAssetsPath . '/styles.css" rel="stylesheet">' . PHP_EOL;
 }
 function perfex_email_builder_footer_scripts() {
-    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/runtime-es2015.js') . '" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/runtime-es5.js') . '" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/polyfills-es2015.js') . '" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/polyfills-es5.js') . '" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/vendor-es2015.js') . '" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/vendor-es5.js') . '" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/main-es2015.js') . '" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/main-es5.js') . '" nomodule defer></script>' . PHP_EOL;
+    $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
+    
+    echo '<script src="' . $builderAssetsPath . '/runtime-es2015.js" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/runtime-es5.js" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/polyfills-es2015.js" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/polyfills-es5.js" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/vendor-es2015.js" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/vendor-es5.js" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/main-es2015.js" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/main-es5.js" nomodule defer></script>' . PHP_EOL;
 }
 
 /**

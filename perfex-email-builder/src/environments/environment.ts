@@ -4,7 +4,7 @@
 
 export const environment = {
   globalVariable: {
-    API_BASE: '/admin/email_builder',
+    API_BASE: '/admin/perfex_email_builder',
     CSRF: {
       name: 'csrf_token_name',
       token: 'e0434ec87cb5088244fd681842239268'
