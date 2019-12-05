@@ -16,7 +16,6 @@ define('EMAIL_BUILDER_MODULE_NAME', 'perfex_email_builder');
 define('EMAIL_BUILDER_NGB_FOLDER', 'em');
 
 hooks()->add_action('admin_init', 'email_builder_init_menu_items');
-
 hooks()->add_action('before_tickets_email_templates', 'before_tickets_email_templates');
 hooks()->add_filter('module_' . EMAIL_BUILDER_MODULE_NAME . '_action_links', 'email_builder_setup_action_links');
 
@@ -38,14 +37,28 @@ function before_parse_email_template_message($template) {
     return $template;
 }
 
-$isModulePage = strpos(base_url(uri_string()), EMAIL_BUILDER_MODULE_NAME);
+// $isModulePage = strpos(base_url(uri_string()), EMAIL_BUILDER_MODULE_NAME);
 
-if ($isModulePage) {
-    hooks()->add_action('app_admin_head', 'theme_scripts_admin_head');
-    function theme_scripts_admin_head() {
-        echo '<base href="'.module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/').'">' . PHP_EOL;
-    }
+function perfex_email_builder_head_styles() {
+    echo '<base href="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/') . '">' . PHP_EOL;
+    echo '<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />' . PHP_EOL;
+    echo '<link href="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/styles.css'). '" rel="stylesheet">' . PHP_EOL;
 }
+function perfex_email_builder_footer_scripts() {
+    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/runtime-es2015.js') . '" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/runtime-es5.js') . '" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/polyfills-es2015.js') . '" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/polyfills-es5.js') . '" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/vendor-es2015.js') . '" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/vendor-es5.js') . '" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/main-es2015.js') . '" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/main-es5.js') . '" nomodule defer></script>' . PHP_EOL;
+}
+
+/**
+* Register language files, must be registered if the module is using languages
+*/
+register_language_files(EMAIL_BUILDER_MODULE_NAME, [EMAIL_BUILDER_MODULE_NAME]);
 
 function email_builder_init_menu_items() {
     $CI = &get_instance();
@@ -62,17 +75,17 @@ function email_builder_init_menu_items() {
         ]);
 
         $CI->app_menu->add_setup_children_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
-            'slug'     => 'email-builder.start', // Required ID/slug UNIQUE for the child menu
-            'name'     => _l('email-builder.start'), // The name if the item
+            'slug'     => 'edit_an_email_template', // Required ID/slug UNIQUE for the child menu
+            'name'     => _l('edit_an_email_template'), // The name if the item
             'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME), // URL of the item
             // 'position' => 5, // The menu position
             // 'icon'     => 'fa fa-exclamation', // Font awesome icon
         ]);
 
         $CI->app_menu->add_setup_children_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
-            'slug'     => 'email-builder.settings', // Required ID/slug UNIQUE for the child menu
-            'name'     => _l('email-builder.settings'), // The name if the item
-            'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME . '/settings'), // URL of the item
+            'slug'     => EMAIL_BUILDER_MODULE_NAME . '_options', // Required ID/slug UNIQUE for the child menu
+            'name'     => _l(EMAIL_BUILDER_MODULE_NAME . '_options'), // The name if the item
+            'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME . '/options'), // URL of the item
             // 'position' => 5, // The menu position
             // 'icon'     => 'fa fa-exclamation', // Font awesome icon
         ]);
@@ -80,7 +93,7 @@ function email_builder_init_menu_items() {
 }
 
 function before_tickets_email_templates() {
-    echo '<div class="col-md-6 col-md-offset-3 col-xs-12 col-xs-offset-0"><div class="alert alert-warning">Edit into email builder</div></div>';
+    echo '<div class="col-md-6 col-md-offset-3 col-xs-12 col-xs-offset-0"><div class="alert alert-warning">' . _l('email_templates_top_alert') . '</div></div>';
 }
 
 /**

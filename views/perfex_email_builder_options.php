@@ -4,6 +4,7 @@
     <div class="content">
         <div class="panel_s">
             <div class="panel-body">
+                <?php hooks()->do_action('before_options_perfex_email_builder'); ?>
                 <h1><?php echo $title ?></h1>
             </div>
         </div>

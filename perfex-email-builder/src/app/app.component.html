@@ -70,11 +70,7 @@
       </mat-form-field>
 
       <div *ngIf="mergeFields.length" fxLayout="row wrap" fxLayoutGap="1rem">
-        <code
-          style="margin-bottom: 1rem"
-          class="force-select"
-          *ngFor="let field of mergeFields"
-        >
+        <code class="force-select" *ngFor="let field of mergeFields">
           {{ field.key }}
         </code>
       </div>

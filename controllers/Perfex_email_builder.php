@@ -29,17 +29,19 @@ class Perfex_email_builder extends AdminController {
         }
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
         $data['available_merge_fields'] = $this->app_merge_fields->all();
+        hooks()->add_action('app_admin_head', 'perfex_email_builder_head_styles');
+        hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');
         // $data['css_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.css'));
         // $data['js_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
         $this->load->view(EMAIL_BUILDER_MODULE_NAME, $data);
     }
 
-    public function settings() {
+    public function options() {
         if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
         }
-        $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME . '.settings');
-        $this->load->view(EMAIL_BUILDER_MODULE_NAME . '_settings', $data);
+        $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME . '_options');
+        $this->load->view(EMAIL_BUILDER_MODULE_NAME . '_options', $data);
     }
 
     public function templates() {

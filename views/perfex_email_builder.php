@@ -1,9 +1,11 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 <?php init_head(); ?>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-<link href="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/styles.css') ?>" rel="stylesheet">
-<app-root id="wrapper"></app-root>
+<div id="wrapper">
+    <?php hooks()->do_action('before_start_perfex_email_builder'); ?>
+    <app-root style="max-height: calc(100vh - 63px);"></app-root>
+    <?php hooks()->do_action('after_start_perfex_email_builder'); ?>
+</div>
 <script>
     window.GlobalVariable = {
         API_BASE: "<?php echo base_url('/admin/' . EMAIL_BUILDER_MODULE_NAME) ?>",
@@ -14,14 +16,6 @@
         }
     }
 </script>
-<script src="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/runtime-es2015.js') ?>" type="module"></script>
-<script src="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/runtime-es5.js') ?>" nomodule defer></script>
-<script src="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/polyfills-es2015.js') ?>" type="module"></script>
-<script src="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/polyfills-es5.js') ?>" nomodule defer></script>
-<script src="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/vendor-es2015.js') ?>" type="module"></script>
-<script src="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/vendor-es5.js') ?>" nomodule defer></script>
-<script src="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/main-es2015.js') ?>" type="module"></script>
-<script src="<?php echo module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/main-es5.js') ?>" nomodule defer></script>
 <?php init_tail(); ?>
 </body>
 </html>
