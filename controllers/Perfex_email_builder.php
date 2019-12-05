@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Email_builder extends AdminController {
+class Perfex_email_builder extends AdminController {
 
     public function __construct() {
         parent::__construct();
@@ -27,21 +27,19 @@ class Email_builder extends AdminController {
         if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
         }
-        $data['title'] = _l('email_builder');
+        $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
         $data['available_merge_fields'] = $this->app_merge_fields->all();
         // $data['css_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.css'));
         // $data['js_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
-        $this->load->view('email_builder', $data);
+        $this->load->view(EMAIL_BUILDER_MODULE_NAME, $data);
     }
 
     public function settings() {
         if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
         }
-        $data['title'] = _l('email_builder.settings');
-        // $data['css_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.css'));
-        // $data['js_files'] = glob(module_dir_path('email_builder', 'assets/perfex-email-builder/*.js'));
-        $this->load->view('email_builder_settings', $data);
+        $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME . '.settings');
+        $this->load->view(EMAIL_BUILDER_MODULE_NAME . '_settings', $data);
     }
 
     public function templates() {
@@ -71,7 +69,7 @@ class Email_builder extends AdminController {
         $this->load->helper('path');
         // $config['upload_path'] = module_dir_path('email_builder', 'assets/upload');
         $media_folder = $this->app->get_media_folder();
-        $defaultMediaFolder =  '/' . get_option('email_builder_default_media_folder') . '/';
+        $defaultMediaFolder =  '/' . get_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder') . '/';
         $mediaPath    = FCPATH . $media_folder . $defaultMediaFolder;
 
         if (!is_dir($mediaPath)) {
@@ -81,7 +79,7 @@ class Email_builder extends AdminController {
         $config['upload_path'] = set_realpath($media_folder . $defaultMediaFolder, true);
         $config['allowed_types'] = 'jpg|jpeg|png|gif';
         $config['encrypt_name'] = TRUE;
-        $config['max_size'] = get_option('media_max_file_size_upload') * 1000;
+        $config['max_size'] = (int)get_option('media_max_file_size_upload') * 1000;
         // $config['max_width'] = 1500;
         // $config['max_height'] = 1500;
 

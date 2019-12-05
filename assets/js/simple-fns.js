@@ -1,3 +1,3 @@
-$(document).ready(function() {
-  console.log(new URLSearchParams(location.href));
-});
+// $(document).ready(function() {
+//   console.log(new URLSearchParams(location.href));
+// });

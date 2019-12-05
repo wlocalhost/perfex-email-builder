@@ -12,12 +12,13 @@ Version: 1.0.0
 Requires at least: 2.4.*
 */
 
-define('EMAIL_BUILDER_MODULE_NAME', 'email_builder');
+define('EMAIL_BUILDER_MODULE_NAME', 'perfex_email_builder');
+define('EMAIL_BUILDER_NGB_FOLDER', 'em');
 
 hooks()->add_action('admin_init', 'email_builder_init_menu_items');
-hooks()->add_action('app_admin_head', 'theme_scripts_admin_head');
+
 hooks()->add_action('before_tickets_email_templates', 'before_tickets_email_templates');
-hooks()->add_filter('module_email_builder_action_links', 'email_builder_setup_action_links');
+hooks()->add_filter('module_' . EMAIL_BUILDER_MODULE_NAME . '_action_links', 'email_builder_setup_action_links');
 
 // hooks set filter before_parse_email_template_message
 hooks()->add_filter('before_parse_email_template_message', 'before_parse_email_template_message');
@@ -25,7 +26,7 @@ function before_parse_email_template_message($template) {
     $CI = &get_instance();
 
     $CI->db->where('emailtemplateid', $template->emailtemplateid);
-    $savedTemplate = $CI->db->get(db_prefix() . 'perfexemailbuilder')->row();
+    $savedTemplate = $CI->db->get(db_prefix() . '_perfex_email_builder')->row();
 
     if ($savedTemplate) {
         $template->message = html_entity_decode($savedTemplate->template);
@@ -37,17 +38,22 @@ function before_parse_email_template_message($template) {
     return $template;
 }
 
-function theme_scripts_admin_head() {
-    // echo '<base href="'.module_dir_url('email_builder', 'assets/perfex-email-builder/').'">' . PHP_EOL;
+$isModulePage = strpos(base_url(uri_string()), EMAIL_BUILDER_MODULE_NAME);
+
+if ($isModulePage) {
+    hooks()->add_action('app_admin_head', 'theme_scripts_admin_head');
+    function theme_scripts_admin_head() {
+        echo '<base href="'.module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER . '/').'">' . PHP_EOL;
+    }
 }
 
 function email_builder_init_menu_items() {
     $CI = &get_instance();
-    $CI->app_scripts->add('email-builder-js', module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/js/simple-fns.js'));
+    // $CI->app_scripts->add('email-builder-js', module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/js/simple-fns.js'));
 
-    if (has_permission('email_builder', '', 'view')) {
+    if (has_permission(EMAIL_BUILDER_MODULE_NAME, '', 'view')) {
         $CI->app_menu->add_setup_menu_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
-            'name'     => _l('email-builder'),
+            'name'     => _l(EMAIL_BUILDER_MODULE_NAME),
             'collapse' => true,
             // 'permissions' => 'email-templates',
             // 'icon'     => 'fa fa-envelope',
@@ -83,7 +89,7 @@ function before_tickets_email_templates() {
 * @return array
 */
 function email_builder_setup_action_links($actions) {
-    $actions[] = '<a href="' . admin_url('email_builder') . '">' . _l('email_builder') . '</a>';
+    $actions[] = '<a href="' . admin_url(EMAIL_BUILDER_MODULE_NAME) . '">' . _l(EMAIL_BUILDER_MODULE_NAME) . '</a>';
     return $actions;
 }
 
@@ -113,5 +119,5 @@ register_uninstall_hook(EMAIL_BUILDER_MODULE_NAME, 'email_builder_uninstall_hook
 function email_builder_uninstall_hook() {
     delete_option('old_email_header');
     delete_option('old_email_footer');
-    delete_option('direct_links_from_email_templates_page');
+    delete_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder');
 }
