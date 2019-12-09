@@ -4,7 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 Module Name: Perfex Email Builder
-Module URI: https://help.perfexcrm.com
+Module URI: https://wlocalhost.org/c/perfex-email-builder/23
 Author: Ion Prodan
 Author URI: https://dev.to/wanoo21
 Description: Beautiful e-mail templates, with no design experience needed.
