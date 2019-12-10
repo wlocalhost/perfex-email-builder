@@ -20,7 +20,7 @@
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 <span class="alert-content"></span>
                             </div>
-                            <?php echo form_open('', ['onsubmit' => '_saveEmailBuilderOptions(event, this)']); ?>
+                            <?php echo form_open('', ['id' => 'saveEmailBuilderOptions']); ?>
                                 <div class="form-group">
                                     <label for="_default_media_folder"><?php echo _l('default_media_folder'); ?></label>
                                     <input required type="text" name="default_media_folder" id="_default_media_folder" value="<?php echo get_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder'); ?>" class="form-control" />
