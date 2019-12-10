@@ -1,6 +1,6 @@
 <?php
 
-# Version 2.3.0
+# Version 2.4.0
 $lang['perfex_email_builder'] = 'Perfex Email Builder';
 $lang['edit_an_email_template'] = 'Edit an email template';
 $lang['perfex_email_builder_options'] = 'Custom Options';

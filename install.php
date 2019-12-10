@@ -2,7 +2,6 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-// add_option('direct_links_from_email_templates_page', 'true');
 add_option('old_email_header', get_option('email_header'));
 add_option('old_email_footer', get_option('email_footer'));
 add_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder', EMAIL_BUILDER_MODULE_NAME);

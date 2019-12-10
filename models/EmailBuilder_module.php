@@ -28,19 +28,11 @@ class EmailBuilder_module extends App_Model {
         $_data             = [];
         $_data['fromname'] = $data['fromname'];
         $_data['subject']  = $data['subject'];
-        // $_data['message']   = $data['htmlTemplate'];
-        // $_data['plaintext'] = $data['plaintext'];
-        // $_data['active']    = $data['active'];
 
         $this->db->where('emailtemplateid', $data['emailtemplateid']);
         if ($this->db->update($this->emailTplsTable, $_data)) {
-            // Insert into perfex database
-
-            // $my_array = json_decode(str_replace ('\"','"', $json_string), true);
             $emailObject = json_encode(json_decode(stripslashes($data['emailObject']), true));
             $template = htmlspecialchars($data['htmlTemplate']);
-
-            // return $data['emailtemplateid'];
 
             $this->db->where('emailtemplateid', $data['emailtemplateid']);
             if ($this->db->get($this->emailBuilderTable)->row()) {

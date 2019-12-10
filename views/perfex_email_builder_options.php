@@ -20,7 +20,7 @@
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 <span class="alert-content"></span>
                             </div>
-                            <?php echo form_open('', ['onsubmit' => 'sendFormData(event, this)']); ?>
+                            <?php echo form_open('', ['onsubmit' => '_saveEmailBuilderOptions(event, this)']); ?>
                                 <div class="form-group">
                                     <label for="_default_media_folder"><?php echo _l('default_media_folder'); ?></label>
                                     <input required type="text" name="default_media_folder" id="_default_media_folder" value="<?php echo get_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder'); ?>" class="form-control" />
@@ -49,22 +49,6 @@
         </div>
     </div>
 </div>
-<script>
-    function sendFormData(ev, form) {
-        ev.preventDefault();
-        var $_form = $(form);
-        var $_alertInfo = $('#alert-info');
-        var $_formData = $_form.serialize();
-
-        $_form.find('input, textarea, button').prop('disabled', true);
-        $.post($_form.attr('action'), $_formData, function(res) {
-            $_alertInfo.addClass('alert-' + res.type);
-            $_alertInfo.find('.alert-content').html(res.status);
-            $_alertInfo.show();
-            $_form.find('input, textarea, button').prop('disabled', false);
-        })
-    }
-</script>
 <?php init_tail(); ?>
 </body>
 </html>

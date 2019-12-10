@@ -37,8 +37,6 @@ function before_parse_email_template_message($template) {
     return $template;
 }
 
-// $isModulePage = strpos(base_url(uri_string()), EMAIL_BUILDER_MODULE_NAME);
-
 function perfex_email_builder_head_styles() {
     $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
 
@@ -66,15 +64,12 @@ register_language_files(EMAIL_BUILDER_MODULE_NAME, [EMAIL_BUILDER_MODULE_NAME]);
 
 function email_builder_init_menu_items() {
     $CI = &get_instance();
-    // $CI->app_scripts->add('email-builder-js', module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/js/simple-fns.js'));
+    $CI->app_scripts->add('email-builder-js', module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/js/simple-fns.js'));
 
     if (has_permission(EMAIL_BUILDER_MODULE_NAME, '', 'view')) {
         $CI->app_menu->add_setup_menu_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
             'name'     => _l(EMAIL_BUILDER_MODULE_NAME),
             'collapse' => true,
-            // 'permissions' => 'email-templates',
-            // 'icon'     => 'fa fa-envelope',
-            // 'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME),
             'position' => 35,
         ]);
 
@@ -82,16 +77,12 @@ function email_builder_init_menu_items() {
             'slug'     => 'edit_an_email_template', // Required ID/slug UNIQUE for the child menu
             'name'     => _l('edit_an_email_template'), // The name if the item
             'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME), // URL of the item
-            // 'position' => 5, // The menu position
-            // 'icon'     => 'fa fa-exclamation', // Font awesome icon
         ]);
 
         $CI->app_menu->add_setup_children_item(EMAIL_BUILDER_MODULE_NAME.'-menu', [
             'slug'     => EMAIL_BUILDER_MODULE_NAME . '_options', // Required ID/slug UNIQUE for the child menu
             'name'     => _l(EMAIL_BUILDER_MODULE_NAME . '_options'), // The name if the item
             'href'     => admin_url(EMAIL_BUILDER_MODULE_NAME . '/options'), // URL of the item
-            // 'position' => 5, // The menu position
-            // 'icon'     => 'fa fa-exclamation', // Font awesome icon
         ]);
     }
 }
