@@ -3,3 +3,4 @@ angular-module export-ignore
 README.md export-ignore 
 .* export-ignore
 *.sh export-ignore
+*.zip export-ignore

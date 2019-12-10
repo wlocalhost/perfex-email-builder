@@ -1,1 +1,1 @@
-git archive --worktree-attributes -v --format=zip  --output ../perfex-email-builder.zip HEAD
+git archive --worktree-attributes -v --format=zip --prefix=perfex_email_builder/  --output ../perfex-email-builder.zip HEAD
