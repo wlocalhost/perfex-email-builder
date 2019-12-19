@@ -22,6 +22,7 @@ class Perfex_email_builder extends AdminController {
         }
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
         $data['available_merge_fields'] = $this->app_merge_fields->all();
+        $data['templates'] = $this->emailBuilder_module->getAll(['language' => 'english']);
 
         hooks()->add_action('app_admin_head', 'perfex_email_builder_head_styles');
         hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');

@@ -10,6 +10,7 @@
 <script>
     window.GlobalVariable = {
         API_BASE: "<?php echo base_url('/admin/' . EMAIL_BUILDER_MODULE_NAME) ?>",
+        TEMPLATES: <?php echo json_encode($templates); ?>,
         MERGE_FIELDS: <?php echo json_encode($available_merge_fields); ?>,
         CSRF: {
             name: "<?php echo $this->security->get_csrf_token_name(); ?>",

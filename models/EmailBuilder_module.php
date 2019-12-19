@@ -24,6 +24,10 @@ class EmailBuilder_module extends App_Model {
         return $tpl;
     }
 
+    public function getAll(array $where = []) {
+        return $this->emails_model->get($where, 'result_array');
+    }
+
     public function update(array $data) {
         $_data             = [];
         $_data['fromname'] = $data['fromname'];

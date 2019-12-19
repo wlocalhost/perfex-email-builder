@@ -1,0 +1,26 @@
+:host {
+  display: block;
+}
+
+ip-email-builder,
+.perfex-email-builder {
+  display: block;
+  // height: calc(100vh - 63px);
+
+  input {
+    height: auto;
+    border: none;
+  }
+}
+
+// .perfex-email-builder {
+//   background-color: #8cafed;
+// }
+
+.force-select {
+  -webkit-user-select: all; /* Chrome 49+ */
+  -moz-user-select: all; /* Firefox 43+ */
+  -ms-user-select: all; /* No support yet */
+  user-select: all; /* Likely future */
+  margin-bottom: 1rem;
+}
