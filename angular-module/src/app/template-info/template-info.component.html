@@ -1,4 +1,4 @@
-<mat-card fxFlex="500px">
+<!-- <mat-card fxFlex="500px">
   <mat-card-header>
     <mat-card-title>
       <span *ngIf="!perfexEmail">Choose a template</span>
@@ -33,15 +33,10 @@
       </mat-form-field>
     </div>
 
-    <!-- <div fxLayout fxLayoutGap="1rem" *ngIf="perfexEmail"> -->
     <mat-form-field fxFlex *ngIf="perfexEmail && currentEmail.type">
       <mat-label>From Name</mat-label>
       <input matInput required [(ngModel)]="perfexEmail.fromname" />
     </mat-form-field>
-    <!-- <button mat-icon-button color="accent">
-        <mat-icon>info</mat-icon>
-      </button> -->
-    <!-- </div> -->
 
     <mat-form-field *ngIf="perfexEmail && currentEmail.type">
       <mat-label>Subject</mat-label>
@@ -66,4 +61,4 @@
       Start editing
     </button>
   </mat-card-actions>
-</mat-card>
+</mat-card> -->

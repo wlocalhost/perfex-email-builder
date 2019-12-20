@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, from } from 'rxjs';
+import { filter, toArray, take } from 'rxjs/operators';
 import { IpEmailBuilderService, IPEmail, Structure, TextBlock } from 'ip-email-builder';
 
 import { IPerfexEmail } from '../../interfaces';
@@ -40,7 +41,13 @@ export class TemplatesComponent {
     'client',
     'tasks'
   ];
-  languages = [
+  currentEmail = {
+    type: '',
+    language: 'english'
+  };
+  mergeFields = [];
+
+  languages$ = from([
     'english',
     'bulgarian',
     'catalan',
@@ -64,12 +71,10 @@ export class TemplatesComponent {
     'swedish',
     'turkish',
     'vietnamese'
-  ];
-  currentEmail = {
-    type: '',
-    language: 'english'
-  };
-  mergeFields = [];
+  ]).pipe(filter(lang => !['english', 'russian', 'french', 'german', this.currentEmail.language].includes(lang)), toArray());
+
+  topLanguagesList$ = from(['english', 'russian', 'french', 'german', 'spanish'])
+    .pipe(filter(lang => lang !== this.currentEmail.language), take(4), toArray());
 
   perfexEmail: IPerfexEmail = null;
   startedBuilding = new BehaviorSubject(false);
@@ -146,6 +151,10 @@ export class TemplatesComponent {
         duration: 3000
       });
     }
+  }
+
+  changeLanguage(lang: string) {
+    this.currentEmail.language = lang;
   }
 
   chooseAnotherTemplate() {

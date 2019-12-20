@@ -4,9 +4,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // import { environment } from '../environments/environment';
-import { AppRoutingModule } from './app-routing.module';
+// import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared.module';
 import { TemplateInfoComponent } from './template-info/template-info.component';
+import { TemplatesModule } from './templates/templates.module';
+import { CampaignsModule } from './campaigns/campaigns.module';
+// import { EditTemplateComponent } from './templates/edit-template/edit-template.component';
+// import { CampaignsComponent } from './campaigns/campaigns.component';
+// import { TemplatesComponent } from './templates/templates.component';
 
 @NgModule({
   declarations: [AppComponent, TemplateInfoComponent],
@@ -15,7 +20,9 @@ import { TemplateInfoComponent } from './template-info/template-info.component';
     BrowserModule,
     BrowserAnimationsModule,
     SharedModule,
-    AppRoutingModule,
+    TemplatesModule,
+    CampaignsModule
+    // AppRoutingModule,
   ],
   // providers: [{
   //   // environment.globalVariable.CSRF.name, environment.globalVariable.CSRF.token
