@@ -24,8 +24,11 @@ class EmailBuilder_module extends App_Model {
         return $tpl;
     }
 
-    public function getAll(array $where = []) {
-        return $this->emails_model->get($where, 'result_array');
+    public function getAll(array $where = [], array $select = []) {
+        $this->db->where($where);
+        $this->db->select($select);
+        return $this->db->get(db_prefix() . 'emailtemplates')->result_array();
+        // return $this->emails_model->get($where, 'result_array');
     }
 
     public function update(array $data) {
@@ -48,10 +51,6 @@ class EmailBuilder_module extends App_Model {
             }
             return $success;
         }
-    }
-
-    public function send_simple_email(string $email, string $subject, string $message) {
-        return $this->emails_model->send_simple_email($email, $subject, $message);
     }
 
     public function send_email_template($template_slug, $email, $merge_fields, $ticketid = '', $cc = '') {

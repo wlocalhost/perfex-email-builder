@@ -10,6 +10,7 @@ class Perfex_email_builder extends AdminController {
             access_denied('email_templates');
         }
         $this->load->model('emailBuilder_module');
+        $this->ci = &get_instance();
     }
 
     protected function json_output($data) {
@@ -21,8 +22,10 @@ class Perfex_email_builder extends AdminController {
             access_denied('email_templates');
         }
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
-        $data['available_merge_fields'] = $this->app_merge_fields->all();
-        $data['templates'] = $this->emailBuilder_module->getAll(['language' => 'english']);
+        // $this->ci->load->library('merge_fields/staff_merge_fields');
+        // echo json_encode($this->staff_merge_fields->get());
+        // $data['available_merge_fields'] = $this->app_merge_fields->all();
+        $data['templates'] = $this->emailBuilder_module->getAll(['language' => 'english'], ['emailtemplateid', 'type', 'name', 'subject', 'slug']);
 
         hooks()->add_action('app_admin_head', 'perfex_email_builder_head_styles');
         hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');

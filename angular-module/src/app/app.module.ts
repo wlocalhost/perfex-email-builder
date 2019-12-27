@@ -24,17 +24,6 @@ import { CampaignsModule } from './campaigns/campaigns.module';
     CampaignsModule
     // AppRoutingModule,
   ],
-  // providers: [{
-  //   // environment.globalVariable.CSRF.name, environment.globalVariable.CSRF.token
-  //   // provide: ImageUploader, useClass: UploadImageService
-  //   provide: IP_CONFIG, useValue: {
-  //     xApiKey: 'ULMnDh2ens78ge40yU29Q7bbF6r0N5B96VNbebCJ',
-  //     useDownloadButton: false,
-  //     useSaveButton: false,
-  //     uploadImagePath: `${environment.globalVariable.API_BASE}/upload`,
-  //     csrf: { name: environment.globalVariable.CSRF.name, token: environment.globalVariable.CSRF.token }
-  //   }
-  // }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

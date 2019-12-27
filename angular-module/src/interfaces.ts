@@ -15,3 +15,11 @@ export interface IPerfexEmail {
   subject: string;
   type: string;
 }
+
+export interface ITemplate {
+  emailtemplateid: string;
+  type: string;
+  name: string;
+  subject: string;
+  slug: string;
+}

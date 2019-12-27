@@ -1,9 +1,10 @@
 import { Component, ElementRef } from '@angular/core';
+import { ITemplate } from 'src/interfaces';
 
 @Component({
   selector: 'app-root',
   template: `
-    <app-templates *ngIf="mount === 'templates';else campaigns"></app-templates>
+    <app-templates [templates]="templates" *ngIf="mount === 'templates';else campaigns"></app-templates>
     <ng-template #campaigns>
       <app-campaigns></app-campaigns>
     </ng-template>
@@ -16,12 +17,11 @@ import { Component, ElementRef } from '@angular/core';
 })
 export class AppComponent {
   mount: string;
+  templates: ITemplate[];
 
   constructor(el: ElementRef<HTMLElement>) {
-    // const templateEl = this.el.nativeElement.nextElementSibling as HTMLTemplateElement;
-    // this.renderer.setProperty(this.el.nativeElement, 'innerHTML', templateEl.innerHTML);
     this.mount = el.nativeElement.getAttribute('data-mount') || 'templates';
-
-    console.log(el.nativeElement.dataset);
+    const { templates } = el.nativeElement.dataset;
+    this.templates = JSON.parse(templates);
   }
 }
