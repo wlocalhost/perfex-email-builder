@@ -12,7 +12,11 @@ import { EditTemplateComponent } from './edit-template/edit-template.component';
   declarations: [TemplatesComponent, EditTemplateComponent],
   imports: [
     SharedModule,
-    IpEmailBuilderModule.forChild({ xApiKey: '' }),
+    IpEmailBuilderModule.forChild({
+      xApiKey: 'ULMnDh2ens78ge40yU29Q7bbF6r0N5B96VNbebCJ',
+      useDownloadButton: false,
+      useSaveButton: false
+    }),
     // TemplatesRoutingModule,
   ],
   exports: [TemplatesComponent],

@@ -6,6 +6,7 @@ import { IpEmailBuilderService, IPEmail, Structure, TextBlock } from 'ip-email-b
 
 import { IPerfexEmail, ITemplate } from '../../interfaces';
 import { environment } from '../../environments/environment';
+import { ResourceService } from '../resource.service';
 
 @Component({
   selector: 'app-templates',
@@ -14,30 +15,8 @@ import { environment } from '../../environments/environment';
 })
 export class TemplatesComponent implements OnInit {
   @Input() templates: ITemplate[] = [];
-  displayedColumns = ['name', 'subject', 'button'];
-
-  types = [
-    'staff',
-    'credit_note',
-    'subscriptions',
-    'gdpr',
-    'leads',
-    'project',
-    'proposals',
-    'contract',
-    'estimate',
-    'invoice',
-    'ticket',
-    'client',
-    'tasks'
-  ];
-  currentEmail = {
-    type: '',
-    language: 'english'
-  };
-  mergeFields = [];
-
-  languages$ = from([
+  @Input() latest: ITemplate[] = [];
+  @Input() languages: string[] = [
     'english',
     'bulgarian',
     'catalan',
@@ -61,7 +40,34 @@ export class TemplatesComponent implements OnInit {
     'swedish',
     'turkish',
     'vietnamese'
-  ]).pipe(filter(lang => !['english', 'russian', 'french', 'german', this.currentEmail.language].includes(lang)), toArray());
+  ];
+  @Input() types: string[] = [
+    'staff',
+    'credit_note',
+    'subscriptions',
+    'gdpr',
+    'leads',
+    'project',
+    'proposals',
+    'contract',
+    'estimate',
+    'invoice',
+    'ticket',
+    'client',
+    'tasks'
+  ];
+  displayedColumns = ['name', 'subject', 'button'];
+
+
+
+  currentEmail = {
+    type: '',
+    language: 'english'
+  };
+  mergeFields = [];
+
+  languages$ = from(this.languages)
+    .pipe(filter(lang => !['english', 'russian', 'french', 'german', this.currentEmail.language].includes(lang)), toArray());
 
   topLanguagesList$ = from(['english', 'russian', 'french', 'german', 'spanish'])
     .pipe(filter(lang => lang !== this.currentEmail.language), take(4), toArray());
@@ -69,7 +75,12 @@ export class TemplatesComponent implements OnInit {
   perfexEmail: IPerfexEmail = null;
   startedBuilding = new BehaviorSubject(false);
 
-  constructor(private ngb: IpEmailBuilderService, private http: HttpClient) { }
+  constructor(private ngb: IpEmailBuilderService, private http: HttpClient, private resourceService: ResourceService) { }
+
+  async getTemplatesByLanguage(lang: string) {
+    this.templates = await this.resourceService.getTemplatesByLanguage(lang).toPromise();
+    console.log(this.templates);
+  }
 
   async getEmail() {
     if (this.currentEmail.type && this.currentEmail.language) {
@@ -142,6 +153,7 @@ export class TemplatesComponent implements OnInit {
 
   changeLanguage(lang: string) {
     this.currentEmail.language = lang;
+    this.getTemplatesByLanguage(lang);
   }
 
   chooseAnotherTemplate() {
@@ -156,7 +168,7 @@ export class TemplatesComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.templates);
+    // console.log(this.templates);
   }
 
 }

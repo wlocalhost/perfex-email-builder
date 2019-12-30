@@ -18,6 +18,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 
 @NgModule({
@@ -40,7 +41,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatToolbarModule,
     MatMenuModule,
     MatTabsModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatSidenavModule
   ]
 })
 export class SharedModule { }

@@ -1,4 +1,5 @@
 import { IPEmail } from 'ip-email-builder';
+import { HttpParams } from '@angular/common/http';
 
 export interface IPerfexEmail {
   active: string;
@@ -23,3 +24,8 @@ export interface ITemplate {
   subject: string;
   slug: string;
 }
+
+
+export type IParams = HttpParams | {
+  [param: string]: string | string[];
+};

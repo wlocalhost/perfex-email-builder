@@ -1,73 +1,139 @@
-<div
-  fxLayout="column wrap"
-  fxLayoutAlign="top center"
-  fxLayoutGap="1rem"
-  class="mat-typography"
->
-  <mat-toolbar class="mat-elevation-z2">
-    <mat-toolbar-row>
-      <h1>Email templates</h1>
-      <div fxLayout fxLayoutGap="1rem" style="margin-left: auto;">
-        <button mat-raised-button color="primary">
-          {{ currentEmail.language }}
-        </button>
-        <ng-container *ngFor="let lang of topLanguagesList$ | async">
-          <button mat-button (click)="changeLanguage(lang)">{{ lang }}</button>
-        </ng-container>
-        <button mat-button [matMenuTriggerFor]="langMenu">
-          Other
-        </button>
-        <mat-menu #langMenu="matMenu" xPosition="before">
-          <ng-template matMenuContent>
-            <button
-              *ngFor="let lang of languages$ | async"
-              mat-menu-item
-              (click)="changeLanguage(lang)"
-            >
-              {{ lang }}
+<mat-sidenav-container>
+  <mat-sidenav-content>
+    <div
+      fxLayout="column wrap"
+      fxLayoutAlign="top center"
+      fxLayoutGap="1rem"
+      class="mat-typography"
+    >
+      <mat-toolbar class="mat-elevation-z2">
+        <mat-toolbar-row>
+          <h1>Email templates</h1>
+          <div fxLayout fxLayoutGap="1rem" style="margin-left: auto;">
+            <button mat-raised-button color="primary">
+              {{ currentEmail.language }}
             </button>
-          </ng-template>
-        </mat-menu>
-      </div>
-    </mat-toolbar-row>
-  </mat-toolbar>
+            <ng-container *ngFor="let lang of topLanguagesList$ | async">
+              <button mat-button (click)="changeLanguage(lang)">
+                {{ lang }}
+              </button>
+            </ng-container>
+            <button mat-button [matMenuTriggerFor]="langMenu">
+              Other
+            </button>
+            <mat-menu #langMenu="matMenu" xPosition="before">
+              <ng-template matMenuContent>
+                <button
+                  *ngFor="let lang of languages$ | async"
+                  mat-menu-item
+                  (click)="changeLanguage(lang)"
+                >
+                  {{ lang }}
+                </button>
+              </ng-template>
+            </mat-menu>
+          </div>
+        </mat-toolbar-row>
+      </mat-toolbar>
 
-  <div
-    style="padding: 1rem;max-width: 1400px;width: 100%;box-sizing: border-box;"
-  >
-    <mat-accordion>
-      <mat-expansion-panel *ngFor="let type of types">
-        <mat-expansion-panel-header>
-          <mat-panel-title>{{ type }}</mat-panel-title>
-          <!-- <mat-panel-description>
+      <div
+        style="padding: 1rem;max-width: 1400px;width: 100%;box-sizing: border-box;"
+      >
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let type of types">
+            <mat-expansion-panel-header>
+              <mat-panel-title>{{ type }}</mat-panel-title>
+              <!-- <mat-panel-description>
             Type your name and age
           </mat-panel-description> -->
-        </mat-expansion-panel-header>
+            </mat-expansion-panel-header>
 
-        <table mat-table fxFlex [dataSource]="getTemplatesByType(type)">
-          <!-- Position Column -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-          </ng-container>
+            <mat-table fxFlex [dataSource]="getTemplatesByType(type)">
+              <!-- Position Column -->
+              <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  {{ element.name }}
+                </mat-cell>
+              </ng-container>
 
-          <!-- Name Column -->
-          <ng-container matColumnDef="subject">
-            <th mat-header-cell *matHeaderCellDef>Subject</th>
-            <td mat-cell *matCellDef="let element">{{ element.subject }}</td>
-          </ng-container>
+              <!-- Name Column -->
+              <ng-container matColumnDef="subject">
+                <mat-header-cell *matHeaderCellDef>Subject</mat-header-cell>
+                <mat-cell
+                  *matCellDef="let element"
+                  class="subject-column"
+                  fxLayoutAlign="space-between center"
+                >
+                  {{ element.subject }}
+                  <button
+                    mat-icon-button
+                    matTooltip="Edit Email Subject"
+                    matTooltipPosition="left"
+                    aria-label="Edit email subject"
+                    color="primary"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </mat-cell>
+              </ng-container>
 
-          <ng-container matColumnDef="button">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef style="text-align: right;">
-              <button mat-stroked-button>Open in builder</button>
-            </td>
-          </ng-container>
+              <ng-container matColumnDef="button">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  fxFlex="0 0 144px"
+                  fxLayoutAlign="flex-end center"
+                >
+                  Actions
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef
+                  fxLayoutAlign="flex-end"
+                  fxFlex="0 0 auto"
+                >
+                  <button
+                    mat-icon-button
+                    matTooltip="Open in builder"
+                    matTooltipPosition="above"
+                    aria-label="Open in builder"
+                    color="accent"
+                  >
+                    <mat-icon>build</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    matTooltip="Preview"
+                    matTooltipPosition="above"
+                    aria-label="Preview"
+                    color="accent"
+                  >
+                    <mat-icon>streetview</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    matTooltip="Send a test email"
+                    matTooltipPosition="above"
+                    aria-label="Send a test email"
+                    color="accent"
+                  >
+                    <mat-icon>send</mat-icon>
+                  </button>
+                </mat-cell>
+              </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-      </mat-expansion-panel>
-    </mat-accordion>
-  </div>
-</div>
+              <mat-header-row *matHeaderRowDef="displayedColumns">
+              </mat-header-row>
+              <mat-row
+                *matRowDef="let row; columns: displayedColumns"
+              ></mat-row>
+            </mat-table>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+  </mat-sidenav-content>
+  <mat-sidenav position="end" mode="over">
+    <!-- <ip-email-builder></ip-email-builder> -->
+    <ip-preview-template></ip-preview-template>
+  </mat-sidenav>
+</mat-sidenav-container>

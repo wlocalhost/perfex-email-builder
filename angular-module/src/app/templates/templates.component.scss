@@ -1,14 +1,61 @@
 :host {
   display: block;
+  height: inherit;
 }
 
-table td {
-  vertical-align: middle;
+// mat-header-row mat-header-cell:first-child,
+mat-cell:first-child {
+  // margin-right: 10px;
+  border-right: 1px solid rgb(224, 224, 224);
 }
+
+mat-header-row mat-header-cell:nth-child(2),
+mat-cell:nth-child(2) {
+  padding-left: 8px;
+}
+
+// table td {
+//   vertical-align: middle;
+// }
+
+// table tr {
+//   .build-button {
+//     opacity: 0;
+//   }
+
+//   &:hover {
+//     .build-button {
+//       opacity: 1;
+//     }
+//   }
+// }
 
 // .perfex-email-builder {
 //   background-color: #8cafed;
 // }
+
+.subject-column {
+  button {
+    opacity: 0;
+    transition: all ease-in-out 0.3s;
+    will-change: opacity;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &:hover {
+    button:not(:hover) {
+      opacity: 0.5;
+    }
+  }
+}
+
+.mat-drawer-container {
+  background: transparent;
+  height: inherit;
+}
 
 .force-select {
   -webkit-user-select: all; /* Chrome 49+ */
