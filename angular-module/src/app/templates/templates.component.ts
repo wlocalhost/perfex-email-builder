@@ -1,12 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, from } from 'rxjs';
 import { filter, toArray, take } from 'rxjs/operators';
 import { IpEmailBuilderService, IPEmail, Structure, TextBlock } from 'ip-email-builder';
 
-import { IPerfexEmail, ITemplate } from '../../interfaces';
+import { IPerfexEmail, ITemplate, IPreview } from '../../interfaces';
 import { environment } from '../../environments/environment';
 import { ResourceService } from '../resource.service';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-templates',
@@ -59,6 +60,8 @@ export class TemplatesComponent implements OnInit {
   displayedColumns = ['name', 'subject', 'button'];
 
 
+  @ViewChild('rightSidebar', { static: true }) private rightSidebar: MatSidenav;
+  previewTemplate: IPreview;
 
   currentEmail = {
     type: '',
@@ -80,6 +83,17 @@ export class TemplatesComponent implements OnInit {
   async getTemplatesByLanguage(lang: string) {
     this.templates = await this.resourceService.getTemplatesByLanguage(lang).toPromise();
     console.log(this.templates);
+  }
+
+  async getEmailTemplate(emailtemplateid: string) {
+    this.previewTemplate = await this.resourceService.getTemplateBody(emailtemplateid).toPromise();
+    console.log(this.previewTemplate.html);
+    this.ngb.Template = this.previewTemplate.html;
+    await this.rightSidebar.open();
+  }
+
+  async editTemplate(emailtemplateid: string) {
+
   }
 
   async getEmail() {

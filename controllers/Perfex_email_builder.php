@@ -9,7 +9,7 @@ class Perfex_email_builder extends AdminController {
         if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
         }
-        $this->load->model('emailBuilder_module');
+        $this->load->model('emailBuilder_model');
         $this->ci = &get_instance();
     }
 
@@ -25,7 +25,9 @@ class Perfex_email_builder extends AdminController {
         // $this->ci->load->library('merge_fields/staff_merge_fields');
         // echo json_encode($this->staff_merge_fields->get());
         // $data['available_merge_fields'] = $this->app_merge_fields->all();
-        $data['templates'] = $this->emailBuilder_module->getAll(['language' => 'english'], ['emailtemplateid', 'type', 'name', 'subject', 'slug']);
+        $data['templates'] = $this->emailBuilder_model->getAll(['language' => 'english'], ['emailtemplateid', 'type', 'name', 'subject', 'slug', 'active']);
+        $data['latest'] = $this->emailBuilder_model->getAll([], ['emailtemplateid', 'updated_at'], $table = '_perfex_email_builder', $limit = 10, $orderBy = 'updated_at DESC');
+        $data['languages'] = $this->emailBuilder_model->getEmailLanguages();
 
         hooks()->add_action('app_admin_head', 'perfex_email_builder_head_styles');
         hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');
@@ -51,8 +53,18 @@ class Perfex_email_builder extends AdminController {
         }
     }
 
+    public function getEmailTemplate() {
+        $data = $this->emailBuilder_model->getEmailTemplate($this->input->get('emailtemplateid'));
+        return $this->json_output($data);
+    }
+
+    public function getEmailObject() {
+        $data = $this->emailBuilder_model->getEmailObject($this->input->get('emailtemplateid'));
+        return $this->json_output($data);
+    }
+
     public function templates() {
-        $data = $this->emailBuilder_module->get(['type' => $this->input->get('type'), 'language' => $this->input->get('language')]);
+        $data = $this->emailBuilder_model->getAll(['language' => $this->input->get('language')], ['emailtemplateid', 'type', 'name', 'subject', 'slug', 'active']);
         return $this->json_output($data);
     }
 
@@ -64,7 +76,7 @@ class Perfex_email_builder extends AdminController {
             
             $data = $this->input->post();
             $data['htmlTemplate'] = $this->input->post('htmlTemplate', false);
-            $success = $this->emailBuilder_module->update($data);
+            $success = $this->emailBuilder_model->update($data);
             return $this->json_output(['success' => $success]);
         }
     }

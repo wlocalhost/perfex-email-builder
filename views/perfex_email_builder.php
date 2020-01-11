@@ -6,6 +6,8 @@
     <app-root
         data-mount="templates"
         data-templates='<?php echo json_encode($templates); ?>'
+        data-languages='<?php echo json_encode($languages); ?>'
+        data-latest='<?php echo json_encode($latest); ?>'
         data-api-base="<?php echo base_url('/admin/' . EMAIL_BUILDER_MODULE_NAME) ?>"
         data-csrf-token="<?php echo $this->security->get_csrf_hash(); ?>"
         data-csrf-name="<?php echo $this->security->get_csrf_token_name(); ?>">

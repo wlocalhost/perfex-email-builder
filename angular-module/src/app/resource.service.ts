@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { ITemplate, IParams } from 'src/interfaces';
+import { ITemplate, IParams, IPreview } from 'src/interfaces';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 
@@ -28,11 +28,11 @@ export class ResourceService {
     this.headers = new HttpHeaders({ [csrfName]: csrfToken, 'Content-Type': 'application/json' });
   }
 
-  getTemplatesByLanguage(lang: string) {
-    return this.httpGetRequest('templates', { lang }) as Observable<ITemplate[]>;
+  getTemplatesByLanguage(language: string) {
+    return this.httpGetRequest('templates', { language }) as Observable<ITemplate[]>;
   }
 
-  getTemplateBody(templateid: string) {
-    return this.httpGetRequest('template-body', { templateid }) as Observable<ITemplate>;
+  getTemplateBody(emailtemplateid: string) {
+    return this.httpGetRequest('getEmailTemplate', { emailtemplateid }) as Observable<IPreview>;
   }
 }

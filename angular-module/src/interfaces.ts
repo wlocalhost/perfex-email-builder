@@ -18,11 +18,17 @@ export interface IPerfexEmail {
 }
 
 export interface ITemplate {
-  emailtemplateid: string;
+  emailtemplateid: string
   type: string;
   name: string;
   subject: string;
   slug: string;
+  active: string
+}
+
+export interface IPreview {
+  html: string;
+  is_edited: boolean;
 }
 
 
