@@ -65,7 +65,6 @@ class EmailBuilder_model extends App_Model {
 
 
     public function getEmailTemplate(string $emailtemplateid) {
-
         $data = array('is_edited' => false);
         $this->db->where(['emailtemplateid' => $emailtemplateid]);
         $this->db->select('template');
@@ -87,7 +86,15 @@ class EmailBuilder_model extends App_Model {
     public function getEmailObject(string $emailtemplateid) {
         $this->db->select('emailObject');
         $this->db->where(['emailtemplateid' => $emailtemplateid]);
-        return $this->db->get($this->emailBuilderTable)->row();
+        $query = $this->db->get($this->emailBuilderTable);
+
+        if ($query->num_rows() >= 1) {
+            return $query->row();
+        } else {
+            $this->db->select('message');
+            $this->db->where(['emailtemplateid' => $emailtemplateid]);
+            return $this->db->get($this->emailTplsTable)->row();
+        }
     }
 
     public function update(array $data) {

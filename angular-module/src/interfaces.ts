@@ -18,12 +18,12 @@ export interface IPerfexEmail {
 }
 
 export interface ITemplate {
-  emailtemplateid: string
+  emailtemplateid: string;
   type: string;
   name: string;
   subject: string;
   slug: string;
-  active: string
+  active: string;
 }
 
 export interface IPreview {
@@ -31,7 +31,11 @@ export interface IPreview {
   is_edited: boolean;
 }
 
-
 export type IParams = HttpParams | {
   [param: string]: string | string[];
 };
+
+export interface ISidenavData {
+  data?: any;
+  type: 'preview' | 'builder';
+}

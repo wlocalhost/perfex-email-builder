@@ -58,7 +58,7 @@ class Perfex_email_builder extends AdminController {
         return $this->json_output($data);
     }
 
-    public function getEmailObject() {
+    public function getTemplate() {
         $data = $this->emailBuilder_model->getEmailObject($this->input->get('emailtemplateid'));
         return $this->json_output($data);
     }
@@ -85,7 +85,7 @@ class Perfex_email_builder extends AdminController {
         $this->load->helper('path');
         $media_folder = $this->app->get_media_folder();
         $defaultMediaFolder =  '/' . get_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder') . '/';
-        $mediaPath    = FCPATH . $media_folder . $defaultMediaFolder;
+        $mediaPath = FCPATH . $media_folder . $defaultMediaFolder;
 
         if (!is_dir($mediaPath)) {
             mkdir($mediaPath, 0755);
