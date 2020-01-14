@@ -91,7 +91,7 @@ class EmailBuilder_model extends App_Model {
         if ($query->num_rows() >= 1) {
             return $query->row();
         } else {
-            $this->db->select('message');
+            $this->db->select(['message', 'subject']);
             $this->db->where(['emailtemplateid' => $emailtemplateid]);
             return $this->db->get($this->emailTplsTable)->row();
         }

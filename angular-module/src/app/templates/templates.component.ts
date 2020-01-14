@@ -59,9 +59,11 @@ export class TemplatesComponent implements OnInit {
     this.ngb.Email = new IPEmail(data.emailObject || {
       structures: [
         new Structure('cols_1', [[new TextBlock(data.message)]])
-      ]
+      ],
+      general: {
+        previewText: 'dsd'
+      }
     });
-    console.log(this.ngb.Email);
     this.showInSidenav$.next({ type: 'builder' });
   }
 
