@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { IpEmailBuilderService, IPEmail, Structure, TextBlock } from 'ip-email-builder';
+import { BehaviorSubject, of, forkJoin, Observable } from 'rxjs';
+import { IpEmailBuilderService } from 'ip-email-builder';
 
 import { ITemplate, ISidenavData } from '../../interfaces';
 import { ResourceService } from '../resource.service';
+import { map, tap, switchMap, mergeMap, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-templates',
@@ -11,10 +12,11 @@ import { ResourceService } from '../resource.service';
   styleUrls: ['./templates.component.scss']
 })
 export class TemplatesComponent implements OnInit {
+  private templatesCache = new Map<string, ITemplate[]>();
   @Input() private templates: ITemplate[];
   @Input() latest: ITemplate[];
-  @Input() languages: string[] = [];
-  @Input() types: string[] = [
+  @Input() languages: string[];
+  @Input() types = [
     'staff',
     'credit_note',
     'subscriptions',
@@ -31,6 +33,8 @@ export class TemplatesComponent implements OnInit {
   ];
   displayedColumns = ['name', 'subject', 'button'];
   showInSidenav$ = new BehaviorSubject<ISidenavData>(null);
+  activeLanguage$ = new BehaviorSubject('english');
+  getTemplates$: Observable<ITemplate[]>;
 
   // languages$ = from(this.languages)
   //   .pipe(filter(lang => !['english', 'russian', 'french', 'german', this.currentEmail.language].includes(lang)), toArray());
@@ -43,28 +47,31 @@ export class TemplatesComponent implements OnInit {
 
   constructor(
     private ngb: IpEmailBuilderService,
-    public resourceService: ResourceService) { }
-
-  async getTemplatesByLanguage(lang: string) {
-    this.templates = await this.resourceService.getTemplatesByLanguage(lang).toPromise();
+    public resourceService: ResourceService) {
   }
 
-  async getEmailTemplate(emailtemplateid: string) {
+  async getTemplateBody(emailtemplateid: string) {
     const data = await this.resourceService.getTemplateBody(emailtemplateid).toPromise();
     this.showInSidenav$.next({ data, type: 'preview' });
   }
 
   async editTemplate(emailtemplateid: string) {
-    const data = await this.resourceService.getTemplate(emailtemplateid).toPromise();
-    this.ngb.Email = new IPEmail(data.emailObject || {
-      structures: [
-        new Structure('cols_1', [[new TextBlock(data.message)]])
-      ],
-      general: {
-        previewText: 'dsd'
-      }
-    });
+    this.ngb.Email = await this.resourceService.getTemplate(emailtemplateid).toPromise();
     this.showInSidenav$.next({ type: 'builder' });
+  }
+
+  async getTemplates(lang: string) {
+    let templates: ITemplate[];
+    if (!this.templatesCache.has(lang)) {
+      templates = await this.resourceService.getTemplatesByLang(lang).toPromise();
+      this.templatesCache.set(lang, templates);
+    }
+    this.activeLanguage$.next(lang);
+    this.templates = templates || this.templatesCache.get(lang);
+  }
+
+  getTemplatesByType(type: string) {
+    return this.templates.filter((template: ITemplate) => template.type === type);
   }
 
   // async getEmail() {
@@ -148,12 +155,42 @@ export class TemplatesComponent implements OnInit {
   //   this.startedBuilding.next(false);
   // }
 
-  getTemplatesByType(type: string) {
-    return this.templates.filter(template => template.type === type);
-  }
+  // getTypes$() {
+  //   return this.activeLanguage$.pipe(
+  //     distinct(),
+  //     switchMap(lang => {
+  //       const templates = this.templatesCache.get(lang) || [];
+  //       const types = [...this.types].map(type => ({ type, templates: templates.filter((template: ITemplate) => template.type === type) }));
+  //       console.log(types);
+  //       return of([...types]);
+  //     })
+  //   );
+  // }
+
+  // getTemplatesByType(type: string) {
+  //   return this.activeLanguage$.pipe(
+  //     switchMap(lang => {
+  //       console.log(lang);
+  //       if (this.templatesCache.has(lang)) {
+  //         return of(this.templatesCache.get(lang));
+  //       } else {
+  //         return this.resourceService.getTemplatesByLang(lang).pipe(
+  //           tap(templates => this.templatesCache.set(lang, templates)),
+  //           distinctUntilChanged()
+  //         );
+  //       }
+  //     }),
+  //     map(templates => {
+  //       if (templates.length) {
+  //         return templates.filter((template: ITemplate) => template.type === type);
+  //       }
+  //       return [];
+  //     }),
+  //     distinctUntilChanged()
+  //   );
+  // }
 
   ngOnInit() {
-    // console.log(this.templates);
+    this.templatesCache.set('english', this.templates);
   }
-
 }

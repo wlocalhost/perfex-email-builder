@@ -6,7 +6,12 @@ import { IpEmailBuilderService, IP_CONFIG } from 'ip-email-builder';
 @Component({
   selector: 'app-root',
   template: `
-    <app-templates [templates]="templates" [latest]="latest" *ngIf="mount === 'templates';else campaigns"></app-templates>
+    <app-templates
+      [templates]="templates"
+      [languages]="languages"
+      [latest]="latest"
+      *ngIf="mount === 'templates';else campaigns">
+    </app-templates>
     <ng-template #campaigns>
       <app-campaigns></app-campaigns>
     </ng-template>
@@ -21,16 +26,16 @@ export class AppComponent {
   mount: string;
   templates: ITemplate[];
   latest: ITemplate[];
+  languages: string[];
 
   constructor(el: ElementRef<HTMLElement>, resourceService: ResourceService, @Inject(IP_CONFIG) config) {
-    const { templates, latest = '[]', mount, apiBase, csrfToken, csrfName } = el.nativeElement.dataset;
+    const { templates, languages, latest = '[]', mount, apiBase, csrfToken, csrfName } = el.nativeElement.dataset;
     this.mount = mount;
     this.templates = JSON.parse(templates);
     this.latest = JSON.parse(latest);
+    this.languages = JSON.parse(languages);
 
     resourceService.init(apiBase, csrfName, csrfToken);
     config.uploadImagePath = `${apiBase}/upload`;
-
-    console.log(config);
   }
 }

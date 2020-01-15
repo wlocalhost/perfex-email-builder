@@ -19,6 +19,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
     MatMenuModule,
     MatTabsModule,
     MatExpansionModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatProgressBarModule
   ]
 })
 export class SharedModule { }

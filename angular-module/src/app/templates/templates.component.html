@@ -7,32 +7,29 @@
       class="mat-typography"
     >
       <mat-toolbar class="mat-elevation-z2">
+        <mat-progress-bar
+          mode="indeterminate"
+          style="position: absolute;"
+          *ngIf="resourceService.isLoading$ | async"
+        ></mat-progress-bar>
         <mat-toolbar-row>
-          <h1>Email templates {{ resourceService.isLoading$ | async }}</h1>
-          <!-- <div fxLayout fxLayoutGap="1rem" style="margin-left: auto;">
-            <button mat-raised-button color="primary">
-              {{ currentEmail.language }}
-            </button>
-            <ng-container *ngFor="let lang of topLanguagesList$ | async">
-              <button mat-button (click)="changeLanguage(lang)">
-                {{ lang }}
-              </button>
-            </ng-container>
+          <h1>Email templates</h1>
+          <div style="margin-left: auto;">
             <button mat-button [matMenuTriggerFor]="langMenu">
               Other
             </button>
             <mat-menu #langMenu="matMenu" xPosition="before">
               <ng-template matMenuContent>
                 <button
-                  *ngFor="let lang of languages$ | async"
+                  *ngFor="let lang of languages"
                   mat-menu-item
-                  (click)="changeLanguage(lang)"
+                  (click)="getTemplates(lang)"
                 >
                   {{ lang }}
                 </button>
               </ng-template>
             </mat-menu>
-          </div> -->
+          </div>
         </mat-toolbar-row>
       </mat-toolbar>
 
@@ -73,6 +70,7 @@
                     matTooltipPosition="left"
                     aria-label="Edit email subject"
                     color="primary"
+                    [disabled]="resourceService.isLoading$ | async"
                   >
                     <mat-icon>edit</mat-icon>
                   </button>
@@ -98,6 +96,7 @@
                     matTooltipPosition="above"
                     aria-label="Open in builder"
                     color="accent"
+                    [disabled]="resourceService.isLoading$ | async"
                     (click)="editTemplate(element.emailtemplateid)"
                   >
                     <mat-icon>build</mat-icon>
@@ -108,7 +107,8 @@
                     matTooltipPosition="above"
                     aria-label="Preview"
                     color="accent"
-                    (click)="getEmailTemplate(element.emailtemplateid)"
+                    [disabled]="resourceService.isLoading$ | async"
+                    (click)="getTemplateBody(element.emailtemplateid)"
                   >
                     <mat-icon>streetview</mat-icon>
                   </button>
@@ -118,6 +118,7 @@
                     matTooltipPosition="above"
                     aria-label="Send a test email"
                     color="accent"
+                    [disabled]="resourceService.isLoading$ | async"
                   >
                     <mat-icon>send</mat-icon>
                   </button>
