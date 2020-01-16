@@ -44,8 +44,14 @@ class EmailBuilder_model extends App_Model {
         if ($orderBy) {
             $this->db->order_by($orderBy);
         }
-
-        return $this->db->get(db_prefix() . $table)->result_array();
+        
+        $templates = [];
+        foreach ($this->db->get(db_prefix() . $table)->result_array() as $item) {
+            $type = $item['type'];
+            unset($item['type']);
+            $templates[$type][] = $item;
+        }
+        return $templates;
     }
 
     public function getEmailLanguages() {

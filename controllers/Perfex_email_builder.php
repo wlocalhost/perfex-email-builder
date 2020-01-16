@@ -64,7 +64,7 @@ class Perfex_email_builder extends AdminController {
     }
 
     public function templates() {
-        $data = $this->emailBuilder_model->getAll(['language' => $this->input->get('language')], ['emailtemplateid', 'type', 'name', 'subject', 'slug', 'active']);
+        $data = $this->emailBuilder_model->getAll(['language' => $this->input->get('language')], ['emailtemplateid', 'type', 'name', 'subject', 'active']);
         return $this->json_output($data);
     }
 

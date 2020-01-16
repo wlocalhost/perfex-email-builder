@@ -1,6 +1,11 @@
 :host {
   display: block;
   height: inherit;
+  min-height: inherit;
+}
+
+mat-sidenav-container {
+  min-height: inherit;
 }
 
 // mat-header-row mat-header-cell:first-child,

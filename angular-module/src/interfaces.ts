@@ -19,11 +19,15 @@ export interface IPerfexEmail {
 
 export interface ITemplate {
   emailtemplateid: string;
-  type: string;
+  // type: string;
   name: string;
   subject: string;
-  slug: string;
+  // slug: string;
   active: string;
+}
+
+export interface IServerTemplateResponse {
+  [key: string]: ITemplate[];
 }
 
 export interface IPreview {

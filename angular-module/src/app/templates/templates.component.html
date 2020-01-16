@@ -14,39 +14,50 @@
         ></mat-progress-bar>
         <mat-toolbar-row>
           <h1>Email templates</h1>
-          <div style="margin-left: auto;">
-            <button mat-button [matMenuTriggerFor]="langMenu">
-              Other
+          <div style="margin-left: auto;" fxLayout fxLayoutGap="1rem">
+            <button mat-flat-button color="primary">
+              {{ activeLanguage$ | async }}
             </button>
-            <mat-menu #langMenu="matMenu" xPosition="before">
+            <button
+              mat-flat-button
+              [matMenuTriggerFor]="langMenu"
+              [disabled]="resourceService.isLoading$ | async"
+            >
+              Other Languages
+            </button>
+            <mat-menu #langMenu="matMenu">
               <ng-template matMenuContent>
-                <button
-                  *ngFor="let lang of languages"
-                  mat-menu-item
-                  (click)="getTemplates(lang)"
-                >
-                  {{ lang }}
-                </button>
+                <ng-container *ngFor="let lang of languages">
+                  <button
+                    *ngIf="(activeLanguage$ | async) !== lang"
+                    mat-menu-item
+                    (click)="activeLanguage$.next(lang)"
+                  >
+                    {{ lang }}
+                  </button>
+                </ng-container>
               </ng-template>
             </mat-menu>
           </div>
         </mat-toolbar-row>
       </mat-toolbar>
-
       <div
         style="padding: 1rem;max-width: 1400px;width: 100%;box-sizing: border-box;"
       >
-        <mat-accordion>
-          <mat-expansion-panel *ngFor="let type of types">
+        <mat-accordion fxFlex>
+          <mat-expansion-panel
+            *ngFor="let item of getTemplates$ | async | keyvalue"
+            [expanded]="item.key === expansionPanelOpen()"
+            (opened)="expansionPanelOpen(item.key)"
+          >
             <mat-expansion-panel-header>
-              <mat-panel-title>{{ type }}</mat-panel-title>
+              <mat-panel-title>{{ item.key }}</mat-panel-title>
               <!-- <mat-panel-description>
             Type your name and age
           </mat-panel-description> -->
             </mat-expansion-panel-header>
 
-            <mat-table fxFlex [dataSource]="getTemplatesByType(type)">
-              <!-- Position Column -->
+            <mat-table fxFlex [dataSource]="item.value">
               <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
                 <mat-cell *matCellDef="let element">
@@ -55,7 +66,6 @@
                 </mat-cell>
               </ng-container>
 
-              <!-- Name Column -->
               <ng-container matColumnDef="subject">
                 <mat-header-cell *matHeaderCellDef>Subject</mat-header-cell>
                 <mat-cell

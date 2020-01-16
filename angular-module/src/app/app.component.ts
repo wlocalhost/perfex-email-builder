@@ -1,5 +1,5 @@
 import { Component, ElementRef, Inject } from '@angular/core';
-import { ITemplate } from 'src/interfaces';
+import { ITemplate, IServerTemplateResponse } from 'src/interfaces';
 import { ResourceService } from './resource.service';
 import { IpEmailBuilderService, IP_CONFIG } from 'ip-email-builder';
 
@@ -19,12 +19,14 @@ import { IpEmailBuilderService, IP_CONFIG } from 'ip-email-builder';
   styles: [`
     :host {
       display: block;
+      height: inherit;
+      min-height: inherit;
     }
   `]
 })
 export class AppComponent {
   mount: string;
-  templates: ITemplate[];
+  templates: IServerTemplateResponse;
   latest: ITemplate[];
   languages: string[];
 

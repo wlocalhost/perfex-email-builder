@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, throwError } from 'rxjs';
-import { ITemplate, IParams, IPreview, IPerfexEmail } from 'src/interfaces';
-import { catchError, map, finalize, distinctUntilChanged } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, throwError, Observable, empty } from 'rxjs';
+import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse } from 'src/interfaces';
+import { catchError, map, finalize, distinctUntilChanged, exhaustMap, exhaust } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class ResourceService {
   private headers: HttpHeaders;
   isLoading$ = new BehaviorSubject(false);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private matSnack: MatSnackBar) { }
 
   private httpGetRequest<T>(path: string, params: IParams) {
     this.isLoading$.next(true);
@@ -23,10 +24,18 @@ export class ResourceService {
       params,
       responseType: 'json'
     }).pipe(
-      distinctUntilChanged(),
-      catchError(error => {
-        console.error(error);
-        return throwError(error);
+      catchError((error: HttpErrorResponse) => {
+        if (error.error instanceof ErrorEvent) {
+          console.error('An error occurred:', error.error.message);
+        } else {
+          console.error(`Backend returned code ${error.status}`);
+          this.matSnack.open(
+            // tslint:disable-next-line: max-line-length
+            `Something bad happened; please try again later. If error persist, contact me at support@wlocalhost.org and include this message "Error Status ${error.status}".`,
+            'Close',
+            { announcementMessage: 'Something bad happened; please try again later.' });
+        }
+        return throwError('Something bad happened; please try again later.');
       }),
       finalize(() => this.isLoading$.next(false)),
     );
@@ -38,7 +47,7 @@ export class ResourceService {
   }
 
   getTemplatesByLang(language: string) {
-    return this.httpGetRequest<ITemplate[]>('templates', { language });
+    return this.httpGetRequest<IServerTemplateResponse>('templates', { language });
   }
 
   getTemplateBody(emailtemplateid: string) {
