@@ -1,4 +1,4 @@
-<mat-sidenav-container>
+<mat-sidenav-container (backdropClick)="closeSidenav()">
   <mat-sidenav-content>
     <div
       fxLayout="column wrap"
@@ -53,11 +53,21 @@
             <mat-expansion-panel-header>
               <mat-panel-title>{{ item.key }}</mat-panel-title>
               <!-- <mat-panel-description>
-            Type your name and age
-          </mat-panel-description> -->
+                {{ item.value.length }}
+              </mat-panel-description> -->
             </mat-expansion-panel-header>
 
             <mat-table fxFlex [dataSource]="item.value">
+              <ng-container matColumnDef="active">
+                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <mat-slide-toggle
+                    [checked]="+element.active === 1"
+                    [disabled]="resourceService.isLoading$ | async"
+                  ></mat-slide-toggle>
+                </mat-cell>
+              </ng-container>
+
               <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
                 <mat-cell *matCellDef="let element">
@@ -67,18 +77,20 @@
               </ng-container>
 
               <ng-container matColumnDef="subject">
-                <mat-header-cell *matHeaderCellDef>Subject</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef>
+                  From Name > Subject
+                </mat-header-cell>
                 <mat-cell
                   *matCellDef="let element"
                   class="subject-column"
                   fxLayoutAlign="space-between center"
                 >
-                  {{ element.subject }}
+                  {{ element.fromname }} > {{ element.subject }}
                   <button
                     mat-icon-button
-                    matTooltip="Edit Email Subject"
+                    matTooltip="Edit email details"
                     matTooltipPosition="left"
-                    aria-label="Edit email subject"
+                    aria-label="Edit email details"
                     color="primary"
                     [disabled]="resourceService.isLoading$ | async"
                   >
@@ -107,7 +119,7 @@
                     aria-label="Open in builder"
                     color="accent"
                     [disabled]="resourceService.isLoading$ | async"
-                    (click)="editTemplate(element.emailtemplateid)"
+                    (click)="editTemplate$.next(element.emailtemplateid)"
                   >
                     <mat-icon>build</mat-icon>
                   </button>
@@ -118,7 +130,7 @@
                     aria-label="Preview"
                     color="accent"
                     [disabled]="resourceService.isLoading$ | async"
-                    (click)="getTemplateBody(element.emailtemplateid)"
+                    (click)="previewTemplate$.next(element.emailtemplateid)"
                   >
                     <mat-icon>streetview</mat-icon>
                   </button>
@@ -147,24 +159,39 @@
     </div>
   </mat-sidenav-content>
   <mat-sidenav
-    [opened]="showInSidenav$ | async"
-    (closed)="showInSidenav$.next(null)"
+    [opened]="openSidenav$ | async"
     position="end"
+    disableClose
     mode="over"
     style="width: 80%;max-width: 1000px;"
   >
-    <ng-container *ngIf="showInSidenav$ | async as data">
-      <div class="preview-container" *ngIf="data.type === 'preview'">
-        <h2 *ngIf="!data.data.is_edited">You must edit it</h2>
-        <!-- <ip-preview-template
-          [template]="data.html"
-          style="height: 100%;justify-content: center;"
-        ></ip-preview-template> -->
+    <div
+      class="preview-container"
+      *ngIf="getTemplateBody$ | async as preview"
+      style="height: inherit;"
+    >
+      <h2 *ngIf="!preview.is_edited">
+        You must edit it
+      </h2>
+      <ip-preview-template
+        [template]="preview.html"
+        style="height: 100%;justify-content: center;"
+      ></ip-preview-template>
+    </div>
+
+    <ip-email-builder
+      *ngIf="getTemplate$ | async as email"
+      style="height: inherit;"
+      [email]="email"
+    >
+      <div class="top-actions" fxLayout fxLayoutGap="0.5rem">
+        <button mat-flat-button color="primary" (click)="saveEmail()">
+          Save
+        </button>
+        <button mat-flat-button (click)="saveEmail(true)">
+          Save and Close
+        </button>
       </div>
-      <ip-email-builder
-        *ngIf="data.type === 'builder'"
-        style="height: inherit;"
-      ></ip-email-builder>
-    </ng-container>
+    </ip-email-builder>
   </mat-sidenav>
 </mat-sidenav-container>

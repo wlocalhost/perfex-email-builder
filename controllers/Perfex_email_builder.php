@@ -25,7 +25,10 @@ class Perfex_email_builder extends AdminController {
         // $this->ci->load->library('merge_fields/staff_merge_fields');
         // echo json_encode($this->staff_merge_fields->get());
         // $data['available_merge_fields'] = $this->app_merge_fields->all();
-        $data['templates'] = $this->emailBuilder_model->getAll(['language' => 'english'], ['emailtemplateid', 'type', 'name', 'subject', 'slug', 'active']);
+        $data['templates'] = $this->emailBuilder_model->getAll(
+          ['language' => 'english'],
+          ['emailtemplateid', 'type', 'name', 'subject', 'fromname', 'active']
+        );
         $data['latest'] = $this->emailBuilder_model->getAll([], ['emailtemplateid', 'updated_at'], $table = '_perfex_email_builder', $limit = 10, $orderBy = 'updated_at DESC');
         $data['languages'] = $this->emailBuilder_model->getEmailLanguages();
 
@@ -64,21 +67,23 @@ class Perfex_email_builder extends AdminController {
     }
 
     public function templates() {
-        $data = $this->emailBuilder_model->getAll(['language' => $this->input->get('language')], ['emailtemplateid', 'type', 'name', 'subject', 'active']);
+        $data = $this->emailBuilder_model->getAll(
+          ['language' => $this->input->get('language')],
+          ['emailtemplateid', 'type', 'name', 'subject', 'active', 'fromname']
+        );
         return $this->json_output($data);
     }
 
     public function update() {
-        if ($this->input->post() && $this->input->post('emailtemplateid') && $this->input->post('emailObject')) {
-            if (!has_permission('email_templates', '', 'edit')) {
-                access_denied('email_templates');
-            }
-            
-            $data = $this->input->post();
-            $data['htmlTemplate'] = $this->input->post('htmlTemplate', false);
-            $success = $this->emailBuilder_model->update($data);
-            return $this->json_output(['success' => $success]);
-        }
+      if (!has_permission('email_templates', '', 'edit')) {
+        access_denied('email_templates');
+      }
+      if ($this->input->post() && $this->input->post('emailtemplateid') && $this->input->post('emailObject')) {
+          $data = $this->input->post();
+          $data['template'] = $this->input->post('template', false);
+          $success = $this->emailBuilder_model->update($data);
+          return $this->json_output(['success' => $success]);
+      }
     }
 
     public function upload() {

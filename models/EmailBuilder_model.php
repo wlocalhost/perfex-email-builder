@@ -35,7 +35,13 @@ class EmailBuilder_model extends App_Model {
         return $columns;
     }
 
-    public function getAll(array $where = [], array $select = [], string $table = 'emailtemplates', int $limit = 0, string $orderBy = '') {
+    public function getAll(
+        array $where = [], 
+        array $select = [], 
+        string $table = 'emailtemplates', 
+        int $limit = 0, 
+        string $orderBy = ''
+    ) {
         $this->db->select($select);
         $this->db->where($where);
         if ($limit > 0) {
@@ -77,7 +83,7 @@ class EmailBuilder_model extends App_Model {
         $query = $this->db->get($this->emailBuilderTable);
 
         if ($query->num_rows() >= 1) {
-            $data['html'] = $query->row()->template;
+            $data['html'] = html_entity_decode($query->row()->template);
             $data['is_edited'] = true;
         } else {
             $this->db->where(['emailtemplateid' => $emailtemplateid]);
@@ -95,7 +101,8 @@ class EmailBuilder_model extends App_Model {
         $query = $this->db->get($this->emailBuilderTable);
 
         if ($query->num_rows() >= 1) {
-            return $query->row();
+            $data['emailObject'] = json_decode($query->row()->emailObject);
+            return $data;
         } else {
             $this->db->select(['message', 'subject']);
             $this->db->where(['emailtemplateid' => $emailtemplateid]);
@@ -104,6 +111,28 @@ class EmailBuilder_model extends App_Model {
     }
 
     public function update(array $data) {
+        $emailObject = json_encode(json_decode(stripslashes($data['emailObject']), true));
+        $template = htmlspecialchars($data['template']);
+
+        $this->db->where('emailtemplateid', $data['emailtemplateid']);
+        if ($this->db->get($this->emailBuilderTable)->row()) {
+            $this->db->where('emailtemplateid', $data['emailtemplateid']);
+            $success = $this->db->update($this->emailBuilderTable, [
+                'emailObject' => $emailObject, 
+                'template' => $template
+            ]);
+        } else {
+            $this->db->where('emailtemplateid', $data['emailtemplateid']);
+            $success = $this->db->insert($this->emailBuilderTable, [
+                'emailObject' => $emailObject, 
+                'template' => $template, 
+                'emailtemplateid' => $data['emailtemplateid']
+            ]);
+        }
+        return $success;
+    }
+
+    public function updateDetails(array $data) {
         $_data             = [];
         $_data['fromname'] = $data['fromname'];
         $_data['subject']  = $data['subject'];

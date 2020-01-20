@@ -8,15 +8,24 @@ mat-sidenav-container {
   min-height: inherit;
 }
 
-// mat-header-row mat-header-cell:first-child,
+mat-header-row mat-header-cell:first-child {
+  max-width: 61px;
+}
 mat-cell:first-child {
-  // margin-right: 10px;
-  border-right: 1px solid rgb(224, 224, 224);
+  max-width: fit-content;
+  padding-right: 24px;
 }
 
 mat-header-row mat-header-cell:nth-child(2),
 mat-cell:nth-child(2) {
-  padding-left: 8px;
+  // padding-right: 24px;
+  max-width: 400px;
+  border-right: 1px solid rgb(224, 224, 224);
+}
+
+mat-header-row mat-header-cell:nth-child(3),
+mat-cell:nth-child(3) {
+  padding-left: 24px;
 }
 
 // table td {

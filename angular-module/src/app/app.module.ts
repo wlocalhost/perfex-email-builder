@@ -8,10 +8,11 @@ import { SharedModule } from './shared.module';
 import { TemplateInfoComponent } from './template-info/template-info.component';
 import { TemplatesModule } from './templates/templates.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
+import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 
 @NgModule({
-  declarations: [AppComponent, TemplateInfoComponent],
-  entryComponents: [TemplateInfoComponent],
+  declarations: [AppComponent, TemplateInfoComponent, ModalDialogComponent],
+  entryComponents: [TemplateInfoComponent, ModalDialogComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

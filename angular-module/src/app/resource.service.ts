@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, throwError, Observable, empty } from 'rxjs';
+import { BehaviorSubject, throwError, Observable, empty, of } from 'rxjs';
 import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse } from 'src/interfaces';
 import { catchError, map, finalize, distinctUntilChanged, exhaustMap, exhaust } from 'rxjs/operators';
 import { environment } from '../environments/environment';
@@ -12,16 +12,17 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ResourceService {
   private apiBase: string;
-  private headers: HttpHeaders;
+  private csrfName: string;
+  private csrfToken: string;
   isLoading$ = new BehaviorSubject(false);
 
   constructor(private http: HttpClient, private matSnack: MatSnackBar) { }
 
-  private httpGetRequest<T>(path: string, params: IParams) {
+  private httpRequest<T>(path: string, params: IParams, method: 'get' | 'post' = 'get', body?: FormData) {
     this.isLoading$.next(true);
-    return this.http.get<T>(`${this.apiBase}/${path}`, {
-      headers: this.headers,
+    return this.http.request<T>(method, `${this.apiBase}/${path}`, {
       params,
+      body,
       responseType: 'json'
     }).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -43,19 +44,20 @@ export class ResourceService {
 
   init(apiBase: string, csrfName: string, csrfToken: string) {
     this.apiBase = environment.production ? apiBase : '/admin/perfex_email_builder';
-    this.headers = new HttpHeaders({ [csrfName]: csrfToken, 'Content-Type': 'application/json' });
+    this.csrfName = csrfName;
+    this.csrfToken = csrfToken;
   }
 
   getTemplatesByLang(language: string) {
-    return this.httpGetRequest<IServerTemplateResponse>('templates', { language });
+    return this.httpRequest<IServerTemplateResponse>('templates', { language });
   }
 
   getTemplateBody(emailtemplateid: string) {
-    return this.httpGetRequest<IPreview>('getEmailTemplate', { emailtemplateid });
+    return this.httpRequest<IPreview>('getEmailTemplate', { emailtemplateid });
   }
 
   getTemplate(emailtemplateid: string) {
-    return this.httpGetRequest('getTemplate', { emailtemplateid }).pipe(
+    return this.httpRequest('getTemplate', { emailtemplateid }).pipe(
       map((res: IPerfexEmail) => {
         return new IPEmail(res.emailObject || {
           structures: [
@@ -67,5 +69,10 @@ export class ResourceService {
         });
       })
     );
+  }
+
+  saveTemplate(body: FormData) {
+    body.append(this.csrfName, this.csrfToken);
+    return this.httpRequest<boolean>('update', {}, 'post', body);
   }
 }

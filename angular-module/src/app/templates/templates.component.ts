@@ -1,10 +1,12 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { BehaviorSubject, of, Observable } from 'rxjs';
-import { tap, exhaustMap } from 'rxjs/operators';
-import { IpEmailBuilderService } from 'ip-email-builder';
+import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
+import { tap, exhaustMap, map } from 'rxjs/operators';
 
-import { ITemplate, ISidenavData, IServerTemplateResponse } from '../../interfaces';
+import { ITemplate, IServerTemplateResponse, IPreview } from '../../interfaces';
 import { ResourceService } from '../resource.service';
+import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 
 @Component({
   selector: 'app-templates',
@@ -13,14 +15,23 @@ import { ResourceService } from '../resource.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemplatesComponent implements OnInit {
+  constructor(
+    public resourceService: ResourceService,
+    private ngb: IpEmailBuilderService,
+    private dialog: MatDialog
+  ) { }
+
   @Input() private templates: IServerTemplateResponse;
   @Input() latest: ITemplate[];
   @Input() languages: string[];
   private templatesCache = new Map<string, IServerTemplateResponse>();
 
-  displayedColumns = ['name', 'subject', 'button'];
-  showInSidenav$ = new BehaviorSubject<ISidenavData>(null);
+  displayedColumns = ['active', 'name', 'subject', 'button'];
   activeLanguage$ = new BehaviorSubject('english');
+
+  previewTemplate$ = new BehaviorSubject<string>(null);
+  editTemplate$ = new BehaviorSubject<string>(null);
+  openSidenav$ = new Subject<boolean>();
 
   // Create observables for resources
   getTemplates$: Observable<IServerTemplateResponse> = this.activeLanguage$.pipe(
@@ -31,26 +42,30 @@ export class TemplatesComponent implements OnInit {
         );
       }
       return of(this.templatesCache.get(lang));
-    })
+    }),
   );
 
-  constructor(
-    private ngb: IpEmailBuilderService,
-    public resourceService: ResourceService) {
-  }
+  getTemplate$: Observable<IPEmail> = this.editTemplate$.pipe(
+    exhaustMap(emailtemplateid => emailtemplateid ? this.resourceService.getTemplate(emailtemplateid).pipe(
+      tap(data => this.openSidenav$.next(!!data))
+    ) : of(null))
+  );
 
-  async getTemplateBody(emailtemplateid: string) {
-    const data = await this.resourceService.getTemplateBody(emailtemplateid).toPromise();
-    requestAnimationFrame(() => {
-      this.showInSidenav$.next({ data, type: 'preview' });
-    });
-  }
+  getTemplateBody$: Observable<IPreview> = this.previewTemplate$.pipe(
+    exhaustMap(emailtemplateid => emailtemplateid ? this.resourceService.getTemplateBody(emailtemplateid).pipe(
+      tap(data => this.openSidenav$.next(!!data))
+    ) : of(null)),
+  );
 
-  async editTemplate(emailtemplateid: string) {
-    this.ngb.Email = await this.resourceService.getTemplate(emailtemplateid).toPromise();
-    requestAnimationFrame(() => {
-      this.showInSidenav$.next({ type: 'builder' });
-    });
+  async closeSidenav() {
+    let closeState = true;
+    if (this.ngb.hasChanges && this.editTemplate$.getValue()) {
+      closeState = await this.dialog.open(ModalDialogComponent)
+        .afterClosed().pipe(map(Boolean)).toPromise();
+    }
+    if (closeState) { this.editTemplate$.next(null); }
+    this.previewTemplate$.next(null);
+    this.openSidenav$.next(!closeState);
   }
 
   expansionPanelOpen(key?: string) {
@@ -60,74 +75,25 @@ export class TemplatesComponent implements OnInit {
     return localStorage.getItem('expansionPanelOpened') || 'client';
   }
 
-  // async getEmail() {
-  //   if (this.currentEmail.type && this.currentEmail.language) {
-  //     this.ngb.snackBar.open('Loading email template, please wait ...');
-  //     const res = (await this.http
-  //       .get(`${environment.globalVariable.API_BASE}/templates`, {
-  //         params: this.currentEmail,
-  //         responseType: 'json'
-  //       })
-  //       .toPromise()) as IPerfexEmail;
-
-  //     this.perfexEmail = res;
-  //     this.mergeFields = environment.globalVariable.MERGE_FIELDS.filter(
-  //       (field: object) => field[this.currentEmail.type]
-  //     )
-  //       .flatMap((field: object) => field[this.currentEmail.type])
-  //       .map(({ key, name }) => ({ key, name }))
-  //       .filter(({ key, name }) => key && name);
-  //     this.ngb.snackBar.dismiss();
-  //   }
-  // }
-
-  // startBuilding() {
-  //   const { emailObject, subject, message } = this.perfexEmail;
-  //   this.ngb.Email = new IPEmail(
-  //     emailObject || {
-  //       structures: [
-  //         new Structure('cols_1', [[new TextBlock(this.perfexEmail.message)]])
-  //       ]
-  //     }
-  //   );
-  //   this.ngb.Template = message;
-  //   this.ngb.Email.general.previewText = subject;
-  //   this.ngb.MergeTags = new Set(this.mergeFields.map(tag => tag.key));
-  //   this.startedBuilding.next(true);
-  // }
-
-  // async saveEmail() {
-  //   if (!this.ngb.hasChanges) {
-  //     return this.ngb.snackBar.open(
-  //       'There are not changes to be saved.',
-  //       'Close',
-  //       {
-  //         duration: 3000
-  //       }
-  //     );
-  //   }
-
-  //   const { email, template } = await this.ngb.saveEmail();
-  //   const { fromname, subject, emailtemplateid } = this.perfexEmail;
-
-  //   const formData = new FormData();
-  //   formData.append(environment.globalVariable.CSRF.name, environment.globalVariable.CSRF.token);
-  //   formData.append('fromname', fromname);
-  //   formData.append('subject', subject);
-  //   formData.append('emailtemplateid', emailtemplateid);
-  //   formData.append('htmlTemplate', template);
-  //   formData.append('emailObject', JSON.stringify(email));
-
-  //   const { success } = (await this.http
-  //     .post(`${environment.globalVariable.API_BASE}/update`, formData)
-  //     .toPromise()) as { success: boolean };
-
-  //   if (success) {
-  //     this.ngb.snackBar.open('Email template updated successfully.', 'Close', {
-  //       duration: 3000
-  //     });
-  //   }
-  // }
+  async saveEmail(closeSidenav: true) {
+    let success = true;
+    if (this.ngb.hasChanges) {
+      const { email, template } = await this.ngb.saveEmail();
+      const formData = new FormData();
+      formData.append('emailtemplateid', this.editTemplate$.getValue());
+      formData.append('emailObject', JSON.stringify(email));
+      formData.append('template', template);
+      success = await this.resourceService.saveTemplate(formData).toPromise();
+    }
+    if (closeSidenav && success) {
+      await this.closeSidenav();
+    }
+    if (success) {
+      this.ngb.snackBar.open('Email template successfully saved.', 'Close', {
+        duration: 3000
+      });
+    }
+  }
 
   ngOnInit() {
     this.templatesCache.set('english', this.templates);

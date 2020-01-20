@@ -1,7 +1,7 @@
 import { Component, ElementRef, Inject } from '@angular/core';
 import { ITemplate, IServerTemplateResponse } from 'src/interfaces';
 import { ResourceService } from './resource.service';
-import { IpEmailBuilderService, IP_CONFIG } from 'ip-email-builder';
+import { IP_CONFIG, IForRootConf } from 'ip-email-builder';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +30,7 @@ export class AppComponent {
   latest: ITemplate[];
   languages: string[];
 
-  constructor(el: ElementRef<HTMLElement>, resourceService: ResourceService, @Inject(IP_CONFIG) config) {
+  constructor(el: ElementRef<HTMLElement>, resourceService: ResourceService, @Inject(IP_CONFIG) config: IForRootConf) {
     const { templates, languages, latest = '[]', mount, apiBase, csrfToken, csrfName } = el.nativeElement.dataset;
     this.mount = mount;
     this.templates = JSON.parse(templates);

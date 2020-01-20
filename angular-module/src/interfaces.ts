@@ -22,6 +22,7 @@ export interface ITemplate {
   // type: string;
   name: string;
   subject: string;
+  fromname: string;
   // slug: string;
   active: string;
 }
@@ -40,6 +41,6 @@ export type IParams = HttpParams | {
 };
 
 export interface ISidenavData {
-  data?: any;
+  emailtemplateid: string;
   type: 'preview' | 'builder';
 }

@@ -21,6 +21,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
 @NgModule({
@@ -46,7 +48,9 @@ import { MatListModule } from '@angular/material/list';
     MatExpansionModule,
     MatSidenavModule,
     MatProgressBarModule,
-    MatListModule
-  ]
+    MatListModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+  ],
 })
 export class SharedModule { }
