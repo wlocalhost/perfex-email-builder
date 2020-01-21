@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, throwError, Observable, empty, of } from 'rxjs';
-import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse } from 'src/interfaces';
-import { catchError, map, finalize, distinctUntilChanged, exhaustMap, exhaust } from 'rxjs/operators';
-import { environment } from '../environments/environment';
-import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject, throwError } from 'rxjs';
+import { catchError, map, finalize } from 'rxjs/operators';
+import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
+
+import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse } from '../interfaces';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'

@@ -62,8 +62,12 @@
                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                 <mat-cell *matCellDef="let element">
                   <mat-slide-toggle
+                    matTooltip="Change active status"
+                    matTooltipPosition="above"
+                    disableRipple
                     [checked]="+element.active === 1"
                     [disabled]="resourceService.isLoading$ | async"
+                    (change)="changeActiveStatus($event, element)"
                   ></mat-slide-toggle>
                 </mat-cell>
               </ng-container>
@@ -92,6 +96,7 @@
                     matTooltipPosition="left"
                     aria-label="Edit email details"
                     color="primary"
+                    (click)="changeElementDetails(element)"
                     [disabled]="resourceService.isLoading$ | async"
                   >
                     <mat-icon>edit</mat-icon>
@@ -99,7 +104,7 @@
                 </mat-cell>
               </ng-container>
 
-              <ng-container matColumnDef="button">
+              <ng-container matColumnDef="actions">
                 <mat-header-cell
                   *matHeaderCellDef
                   fxFlex="0 0 144px"
@@ -141,6 +146,7 @@
                     aria-label="Send a test email"
                     color="accent"
                     [disabled]="resourceService.isLoading$ | async"
+                    (click)="sendTestEmail(element)"
                   >
                     <mat-icon>send</mat-icon>
                   </button>

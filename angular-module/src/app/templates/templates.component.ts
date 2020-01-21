@@ -2,11 +2,12 @@ import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core
 import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
 import { tap, exhaustMap, map } from 'rxjs/operators';
 
-import { ITemplate, IServerTemplateResponse, IPreview } from '../../interfaces';
+import { ITemplate, IServerTemplateResponse, IPreview, IPerfexEmail } from '../../interfaces';
 import { ResourceService } from '../resource.service';
 import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-templates',
@@ -26,7 +27,7 @@ export class TemplatesComponent implements OnInit {
   @Input() languages: string[];
   private templatesCache = new Map<string, IServerTemplateResponse>();
 
-  displayedColumns = ['active', 'name', 'subject', 'button'];
+  displayedColumns = ['active', 'name', 'subject', 'actions'];
   activeLanguage$ = new BehaviorSubject('english');
 
   previewTemplate$ = new BehaviorSubject<string>(null);
@@ -46,15 +47,17 @@ export class TemplatesComponent implements OnInit {
   );
 
   getTemplate$: Observable<IPEmail> = this.editTemplate$.pipe(
-    exhaustMap(emailtemplateid => emailtemplateid ? this.resourceService.getTemplate(emailtemplateid).pipe(
-      tap(data => this.openSidenav$.next(!!data))
-    ) : of(null))
+    exhaustMap(emailtemplateid =>
+      emailtemplateid ? this.resourceService.getTemplate(emailtemplateid).pipe(
+        tap(data => this.openSidenav$.next(!!data))
+      ) : of(null))
   );
 
   getTemplateBody$: Observable<IPreview> = this.previewTemplate$.pipe(
-    exhaustMap(emailtemplateid => emailtemplateid ? this.resourceService.getTemplateBody(emailtemplateid).pipe(
-      tap(data => this.openSidenav$.next(!!data))
-    ) : of(null)),
+    exhaustMap(emailtemplateid =>
+      emailtemplateid ? this.resourceService.getTemplateBody(emailtemplateid).pipe(
+        tap(data => this.openSidenav$.next(!!data))
+      ) : of(null)),
   );
 
   async closeSidenav() {
@@ -93,6 +96,24 @@ export class TemplatesComponent implements OnInit {
         duration: 3000
       });
     }
+  }
+
+  // TODO: Save template active status
+  async changeActiveStatus({ checked }: MatSlideToggleChange, element: IPerfexEmail) {
+    console.log(element.emailtemplateid);
+    console.log('checked', checked);
+
+    element.active = checked ? '1' : '0';
+  }
+
+  // TODO: Change and save element details
+  async changeElementDetails(element: IPerfexEmail) {
+    console.log(element.emailtemplateid);
+  }
+
+  // TODO: Send test email request
+  async sendTestEmail(element: IPerfexEmail) {
+    console.log(element.emailtemplateid);
   }
 
   ngOnInit() {
