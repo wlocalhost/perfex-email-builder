@@ -8,6 +8,8 @@ import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
 import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse } from '../interfaces';
 import { environment } from '../environments/environment';
 
+type TMethod = 'get' | 'post' | 'put';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,7 +21,12 @@ export class ResourceService {
 
   constructor(private http: HttpClient, private matSnack: MatSnackBar) { }
 
-  private httpRequest<T>(path: string, params: IParams, method: 'get' | 'post' = 'get', body?: FormData) {
+  private httpRequest<T>(
+    path: string,
+    params: IParams,
+    method: TMethod = 'get',
+    body?: FormData
+  ) {
     this.isLoading$.next(true);
     return this.http.request<T>(method, `${this.apiBase}/${path}`, {
       params,
@@ -33,7 +40,7 @@ export class ResourceService {
           console.error(`Backend returned code ${error.status}`);
           this.matSnack.open(
             // tslint:disable-next-line: max-line-length
-            `Something bad happened; please try again later. If error persist, contact me at support@wlocalhost.org and include this message "Error Status ${error.status}".`,
+            `Something bad happened; please try again later. If error persist, contact me at support@wlocalhost.org and include this message: "Error Status ${error.status}".`,
             'Close',
             { announcementMessage: 'Something bad happened; please try again later.' });
         }
@@ -72,8 +79,8 @@ export class ResourceService {
     );
   }
 
-  saveTemplate(body: FormData) {
+  sendPostRequest(body: FormData, path: string) {
     body.append(this.csrfName, this.csrfToken);
-    return this.httpRequest<boolean>('update', {}, 'post', body);
+    return this.httpRequest<boolean>(path, {}, 'post', body);
   }
 }

@@ -50,9 +50,11 @@ class EmailBuilder_model extends App_Model {
         if ($orderBy) {
             $this->db->order_by($orderBy);
         }
-        
+        $items = $this->db->get(db_prefix() . $table)->result_array();
         $templates = [];
-        foreach ($this->db->get(db_prefix() . $table)->result_array() as $item) {
+
+        foreach ($items as $item) {
+            if (!isset($item['type'])) continue;
             $type = $item['type'];
             unset($item['type']);
             $templates[$type][] = $item;
@@ -132,25 +134,22 @@ class EmailBuilder_model extends App_Model {
         return $success;
     }
 
-    public function updateDetails(array $data) {
-        $_data             = [];
-        $_data['fromname'] = $data['fromname'];
-        $_data['subject']  = $data['subject'];
+    public function updateDetails(array $updates) {
+        $templateId = $updates['emailtemplateid'];
+        unset($updates['emailtemplateid']);
 
-        $this->db->where('emailtemplateid', $data['emailtemplateid']);
-        if ($this->db->update($this->emailTplsTable, $_data)) {
-            $emailObject = json_encode(json_decode(stripslashes($data['emailObject']), true));
-            $template = htmlspecialchars($data['htmlTemplate']);
-
-            $this->db->where('emailtemplateid', $data['emailtemplateid']);
-            if ($this->db->get($this->emailBuilderTable)->row()) {
-                $this->db->where('emailtemplateid', $data['emailtemplateid']);
-                $success = $this->db->update($this->emailBuilderTable, ['emailObject' => $emailObject, 'template' => $template]);
+        if ($templateId) {
+            $this->db->select(['slug']);
+            $this->db->where('emailtemplateid', $templateId);
+            $query = $this->db->get($this->emailTplsTable)->row();
+            if ($query->slug) {
+                $this->db->where('slug', $query->slug);
+                return $this->db->update($this->emailTplsTable, $updates);
             } else {
-                $this->db->where('emailtemplateid', $data['emailtemplateid']);
-                $success = $this->db->insert($this->emailBuilderTable, ['emailObject' => $emailObject, 'template' => $template, 'emailtemplateid' => $data['emailtemplateid']]);
+                return false;
             }
-            return $success;
+        } else {
+            return false;
         }
     }
 

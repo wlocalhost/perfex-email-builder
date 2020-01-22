@@ -86,7 +86,7 @@ export class TemplatesComponent implements OnInit {
       formData.append('emailtemplateid', this.editTemplate$.getValue());
       formData.append('emailObject', JSON.stringify(email));
       formData.append('template', template);
-      success = await this.resourceService.saveTemplate(formData).toPromise();
+      success = await this.resourceService.sendPostRequest(formData, 'update').toPromise();
     }
     if (closeSidenav && success) {
       await this.closeSidenav();
@@ -98,12 +98,21 @@ export class TemplatesComponent implements OnInit {
     }
   }
 
-  // TODO: Save template active status
-  async changeActiveStatus({ checked }: MatSlideToggleChange, element: IPerfexEmail) {
-    console.log(element.emailtemplateid);
-    console.log('checked', checked);
-
-    element.active = checked ? '1' : '0';
+  async changeActiveStatus({ checked, source }: MatSlideToggleChange, element: IPerfexEmail) {
+    const active = checked ? '1' : '0';
+    const formData = new FormData();
+    formData.append('emailtemplateid', element.emailtemplateid);
+    formData.append('active', active);
+    try {
+      const update: any = await this.resourceService.sendPostRequest(formData, 'changeActiveStatus').toPromise();
+      if (update.success) {
+        element.active = active;
+      } else {
+        source.toggle();
+      }
+    } catch {
+      source.toggle();
+    }
   }
 
   // TODO: Change and save element details
