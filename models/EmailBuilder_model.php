@@ -134,7 +134,7 @@ class EmailBuilder_model extends App_Model {
         return $success;
     }
 
-    public function updateDetails(array $updates) {
+    public function updateActiveStatus(array $updates) {
         $templateId = $updates['emailtemplateid'];
         unset($updates['emailtemplateid']);
 
@@ -148,6 +148,18 @@ class EmailBuilder_model extends App_Model {
             } else {
                 return false;
             }
+        } else {
+            return false;
+        }
+    }
+
+    public function updateDetails(array $updates) {
+        $templateId = $updates['emailtemplateid'];
+        unset($updates['emailtemplateid']);
+
+        if ($templateId) {
+            $this->db->where('emailtemplateid', $templateId);
+            return $this->db->update($this->emailTplsTable, $updates);
         } else {
             return false;
         }

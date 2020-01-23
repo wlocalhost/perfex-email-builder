@@ -93,9 +93,23 @@ class Perfex_email_builder extends AdminController {
       if (!($updates = $this->input->post())) {
         $success = false;
       } else {
-        $success = $this->emailBuilder_model->updateDetails($updates);
+        $success = $this->emailBuilder_model->updateActiveStatus($updates);
       }
       return $this->json_output(['success' => $success]);
+    }
+
+    public function updateDetails() {
+      if (!has_permission('email_templates', '', 'edit')) {
+        access_denied('email_templates');
+      }
+      $updates = [];
+      if (!($updates = $this->input->post())) {
+        $success = false;
+      } else {
+        $success = $this->emailBuilder_model->updateDetails($updates);
+        unset($updates['emailtemplateid']);
+      }
+      return $this->json_output(['success' => $success, 'updates' => $updates]);
     }
 
     public function upload() {

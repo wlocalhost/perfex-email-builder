@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, throwError } from 'rxjs';
-import { catchError, map, finalize } from 'rxjs/operators';
+import { catchError, map, finalize, tap } from 'rxjs/operators';
 import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
 
-import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse } from '../interfaces';
+import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse, TMethod } from '../interfaces';
 import { environment } from '../environments/environment';
 
-type TMethod = 'get' | 'post' | 'put';
+
 
 @Injectable({
   providedIn: 'root'
@@ -23,11 +23,12 @@ export class ResourceService {
 
   private httpRequest<T>(
     path: string,
-    params: IParams,
+    params: IParams = {},
     method: TMethod = 'get',
     body?: FormData
   ) {
     this.isLoading$.next(true);
+    this.matSnack.open('Please wait...');
     return this.http.request<T>(method, `${this.apiBase}/${path}`, {
       params,
       body,
@@ -46,6 +47,7 @@ export class ResourceService {
         }
         return throwError('Something bad happened; please try again later.');
       }),
+      tap(() => this.matSnack.dismiss()),
       finalize(() => this.isLoading$.next(false)),
     );
   }
@@ -57,7 +59,7 @@ export class ResourceService {
   }
 
   getTemplatesByLang(language: string) {
-    return this.httpRequest<IServerTemplateResponse>('templates', { language });
+    return this.httpRequest<IServerTemplateResponse>('templatesd', { language });
   }
 
   getTemplateBody(emailtemplateid: string) {
@@ -79,8 +81,8 @@ export class ResourceService {
     );
   }
 
-  sendPostRequest(body: FormData, path: string) {
+  sendPostRequest<T>(body: FormData, path: string) {
     body.append(this.csrfName, this.csrfToken);
-    return this.httpRequest<boolean>(path, {}, 'post', body);
+    return this.httpRequest<T>(path, {}, 'post', body);
   }
 }

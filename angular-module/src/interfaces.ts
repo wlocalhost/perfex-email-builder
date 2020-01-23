@@ -36,11 +36,28 @@ export interface IPreview {
   is_edited: boolean;
 }
 
-export type IParams = HttpParams | {
+export interface IObject {
   [param: string]: string | string[];
-};
+}
+
+export type IParams = HttpParams | IObject;
 
 export interface ISidenavData {
   emailtemplateid: string;
   type: 'preview' | 'builder';
+}
+
+export type TMethod = 'get' | 'post' | 'put';
+export interface IPostRespose {
+  success: boolean;
+}
+
+export interface ISaveDetailsResponse {
+  success: boolean;
+  updates?: IPerfexEmail;
+}
+
+export interface IDialogData {
+  type: 'confirm' | 'edit' | 'test-email';
+  data?: IObject;
 }
