@@ -21,21 +21,61 @@ class Perfex_email_builder extends AdminController {
         if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
         }
+
+        $active_language = get_option('active_language');
+
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
-        // $this->ci->load->library('merge_fields/staff_merge_fields');
-        // echo json_encode($this->staff_merge_fields->get());
-        // $data['available_merge_fields'] = $this->app_merge_fields->all();
         $data['templates'] = $this->emailBuilder_model->getAll(
-          ['language' => 'english'],
+          ['language' => $active_language],
           ['emailtemplateid', 'type', 'name', 'subject', 'fromname', 'active']
         );
-        $data['latest'] = $this->emailBuilder_model->getAll([], ['emailtemplateid', 'updated_at'], $table = '_perfex_email_builder', $limit = 10, $orderBy = 'updated_at DESC');
+        $data['latest'] = $this->emailBuilder_model->getAll(
+            [],
+            ['emailtemplateid', 'updated_at'], 
+            $table = '_perfex_email_builder', 
+            $limit = 10, 
+            $orderBy = 'updated_at DESC'
+        );
         $data['languages'] = $this->emailBuilder_model->getEmailLanguages();
+        $data['active_language'] = $active_language;
+
+        $merge_fields = [];
+        foreach ($this->app_merge_fields->all() as $val) {
+            foreach($val as $type => $fields) {
+                foreach($fields as $key => $value) {
+                    unset($value['format']);
+                    unset($value['templates']);
+                    unset($value['available']);
+                    $value['type'] = $type;
+                    $merge_fields[] = $value;
+                }
+            }
+        }
+
+        $data['merge_fields'] = $merge_fields;
 
         hooks()->add_action('app_admin_head', 'perfex_email_builder_head_styles');
         hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');
 
         $this->load->view(EMAIL_BUILDER_MODULE_NAME, $data);
+    }
+
+    function array_flatten($array = null) {
+        $result = array();
+    
+        if (!is_array($array)) {
+            $array = func_get_args();
+        }
+    
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $result = array_merge($result, $this->array_flatten($value));
+            } else {
+                $result = array_merge($result, array($key => $value));
+            }
+        }
+    
+        return $result;
     }
 
     public function options() {

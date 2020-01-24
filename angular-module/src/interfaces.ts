@@ -2,7 +2,7 @@ import { IPEmail } from 'ip-email-builder';
 import { HttpParams } from '@angular/common/http';
 
 export interface IPerfexEmail {
-  active: string;
+  active: string | number;
   emailObject: IPEmail;
   emailtemplateid: string;
   fromemail: string;
@@ -60,4 +60,11 @@ export interface ISaveDetailsResponse {
 export interface IDialogData {
   type: 'confirm' | 'edit' | 'test-email';
   data?: IObject;
+  mergeFields?: IMergeField[];
+}
+
+export interface IMergeField {
+  type: string;
+  name: string;
+  key: string;
 }

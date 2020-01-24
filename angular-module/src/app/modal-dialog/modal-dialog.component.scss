@@ -4,4 +4,16 @@
 
 mat-form-field {
   width: 100%;
+  input {
+    border: none;
+    height: auto;
+  }
+}
+
+mat-list {
+  max-height: 300px;
+  overflow: auto;
+  code {
+    user-select: all;
+  }
 }

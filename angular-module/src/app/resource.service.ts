@@ -59,7 +59,7 @@ export class ResourceService {
   }
 
   getTemplatesByLang(language: string) {
-    return this.httpRequest<IServerTemplateResponse>('templatesd', { language });
+    return this.httpRequest<IServerTemplateResponse>('templates', { language });
   }
 
   getTemplateBody(emailtemplateid: string) {

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { BehaviorSubject, of, Observable, Subject, EMPTY } from 'rxjs';
-import { tap, exhaustMap, map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, of, Observable, Subject, EMPTY, NEVER, empty } from 'rxjs';
+import { tap, exhaustMap, map, switchMap, mapTo } from 'rxjs/operators';
 
 import {
   ITemplate,
@@ -13,6 +13,7 @@ import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { AppService } from '../app.service';
 
 @Component({
   selector: 'app-templates',
@@ -24,45 +25,48 @@ export class TemplatesComponent implements OnInit {
   constructor(
     public res: ResourceService,
     private ngb: IpEmailBuilderService,
+    public app: AppService,
     private dialog: MatDialog
   ) { }
 
-  @Input() private templates: IServerTemplateResponse;
-  @Input() latest: ITemplate[];
-  @Input() languages: string[];
-  private templatesCache = new Map<string, IServerTemplateResponse>();
-
   displayedColumns = ['active', 'name', 'subject', 'actions'];
-  activeLanguage$ = new BehaviorSubject('english');
-
+  activeLanguage$ = new BehaviorSubject<string>(null);
+  getActiveLanguage$ = this.activeLanguage$.pipe(
+    map(lang => lang || this.app.activeLanguage)
+  );
   previewTemplate$ = new BehaviorSubject<string>(null);
-  editTemplate$ = new BehaviorSubject<string>(null);
+  editTemplate$ = new BehaviorSubject<{ id: string, type: string }>(null);
   openSidenav$ = new Subject<boolean>();
 
   // Create observables for resources
-  getTemplates$: Observable<IServerTemplateResponse> = this.activeLanguage$.pipe(
+  getTemplates$: Observable<IServerTemplateResponse> = this.getActiveLanguage$.pipe(
     exhaustMap(lang => {
-      if (!this.templatesCache.has(lang)) {
+      if (!this.app.templatesCache.has(lang)) {
         return this.res.getTemplatesByLang(lang).pipe(
-          tap(tmpl => this.templatesCache.set(lang, tmpl)),
+          tap(tmpl => this.app.templatesCache.set(lang, tmpl)),
         );
       }
-      return of(this.templatesCache.get(lang));
+      return of(this.app.templatesCache.get(lang));
     }),
   );
 
   getTemplate$: Observable<IPEmail> = this.editTemplate$.pipe(
-    switchMap(id => id || EMPTY),
-    exhaustMap(id => this.res.getTemplate(id).pipe(
+    exhaustMap(em => em && this.res.getTemplate(em.id).pipe(
+      tap(_ =>
+        this.ngb.MergeTags = new Set(
+          [...this.app.mergeFields
+            .filter(({ type }) => type === em.type)
+            .map(({ key }) => key)
+          ]
+        )),
       tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
-    ))
+    ) || of(null))
   );
 
   getTemplateBody$: Observable<IPreview> = this.previewTemplate$.pipe(
-    switchMap(id => id || EMPTY),
-    exhaustMap(id => this.res.getTemplateBody(id).pipe(
+    exhaustMap(id => id && this.res.getTemplateBody(id).pipe(
       tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
-    )),
+    ) || of(null)),
   );
 
   async closeSidenav() {
@@ -93,7 +97,7 @@ export class TemplatesComponent implements OnInit {
       try {
         const { email, template } = await this.ngb.saveEmail();
         const formData = new FormData();
-        formData.append('emailtemplateid', this.editTemplate$.getValue());
+        formData.append('emailtemplateid', this.editTemplate$.getValue().id);
         formData.append('emailObject', JSON.stringify(email));
         formData.append('template', template);
         const update = await this.res.sendPostRequest<IPostRespose>(formData, 'update').toPromise();
@@ -108,17 +112,17 @@ export class TemplatesComponent implements OnInit {
       await this.closeSidenav();
     }
     if (success) {
-      this.ngb.snackBar.open('Email template successfully saved.', 'Close', {
+      this.ngb.snackBar.open('Email template has been saved successfully.', null, {
         duration: 3000
       });
     }
   }
 
   async changeActiveStatus({ checked, source }: MatSlideToggleChange, element: IPerfexEmail) {
-    const active = checked ? '1' : '0';
+    const active = checked ? 1 : 0;
     const formData = new FormData();
     formData.append('emailtemplateid', element.emailtemplateid);
-    formData.append('active', active);
+    formData.append('active', String(active));
     try {
       const update = await this.res
         .sendPostRequest<IPostRespose>(formData, 'changeActiveStatus').toPromise();
@@ -132,10 +136,14 @@ export class TemplatesComponent implements OnInit {
     }
   }
 
-  async changeElementDetails(element: IPerfexEmail) {
+  async changeElementDetails(element: IPerfexEmail, type: string) {
     const res: ISaveDetailsResponse = await this.dialog.open(ModalDialogComponent, {
-      data: { type: 'edit', data: element },
-      width: '350px',
+      data: {
+        type: 'edit',
+        data: element,
+        mergeFields: this.app.mergeFields.filter(_ => type === _.type)
+      },
+      width: '450px',
       maxWidth: '100%'
     })
       .afterClosed().pipe(
@@ -156,11 +164,13 @@ export class TemplatesComponent implements OnInit {
   }
 
   // TODO: Send test email request
-  async sendTestEmail(element: IPerfexEmail) {
-    console.log(element.emailtemplateid);
-  }
+  // async sendTestEmail(element: IPerfexEmail) {
+  //   console.log(element.emailtemplateid);
+  // }
 
   ngOnInit() {
-    this.templatesCache.set('english', this.templates);
+    // this.activeLanguage$.next(this.activeLanguage);
+    // this.app.templatesCache.set(this.activeLanguage, this.templates);
+    // console.log(this.activeLanguage);
   }
 }

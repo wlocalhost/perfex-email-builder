@@ -45,6 +45,18 @@
           />
         </mat-form-field>
       </form>
+
+      <mat-list dense *ngIf="data.mergeFields">
+        <ng-container *ngFor="let item of data.mergeFields">
+          <mat-list-item *ngIf="item.key">
+            <div fxFlex fxLayout fxLayoutAlign="space-between center">
+              <span>{{ item.name }}</span>
+              <code>{{ item.key }}</code>
+            </div>
+          </mat-list-item>
+          <mat-divider *ngIf="item.key"></mat-divider>
+        </ng-container>
+      </mat-list>
     </mat-dialog-content>
     <mat-dialog-actions fxLayoutAlign="space-between center">
       <button mat-button mat-dialog-close>

@@ -36,14 +36,16 @@ class EmailBuilder_model extends App_Model {
     }
 
     public function getAll(
-        array $where = [], 
+        $where = [],
         array $select = [], 
         string $table = 'emailtemplates', 
         int $limit = 0, 
         string $orderBy = ''
     ) {
         $this->db->select($select);
-        $this->db->where($where);
+        if ($where) {
+            $this->db->where($where);
+        }
         if ($limit > 0) {
             $this->db->limit($limit);
         }
@@ -65,6 +67,7 @@ class EmailBuilder_model extends App_Model {
     public function getEmailLanguages() {
         $languages = [];
         $this->db->select('language');
+        $this->db->where('language !=', get_option('active_language'));
         $this->db->distinct();
         $query = $this->db->get($this->emailTplsTable);
 

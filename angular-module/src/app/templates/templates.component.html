@@ -15,21 +15,32 @@
         <mat-toolbar-row>
           <h1>Email templates</h1>
           <div style="margin-left: auto;" fxLayout fxLayoutGap="1rem">
-            <button mat-flat-button color="primary">
-              {{ activeLanguage$ | async }}
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="activeLanguage$.next(app.activeLanguage)"
+            >
+              {{ app.activeLanguage }}
+            </button>
+            <button
+              mat-stroked-button
+              color="primary"
+              *ngIf="(getActiveLanguage$ | async) !== app.activeLanguage"
+            >
+              {{ getActiveLanguage$ | async }}
             </button>
             <button
               mat-flat-button
               [matMenuTriggerFor]="langMenu"
               [disabled]="res.isLoading$ | async"
             >
-              Other Languages
+              Other languages
             </button>
             <mat-menu #langMenu="matMenu">
               <ng-template matMenuContent>
-                <ng-container *ngFor="let lang of languages">
+                <ng-container *ngFor="let lang of app.languages">
                   <button
-                    *ngIf="(activeLanguage$ | async) !== lang"
+                    *ngIf="(getActiveLanguage$ | async) !== lang"
                     mat-menu-item
                     (click)="activeLanguage$.next(lang)"
                   >
@@ -89,14 +100,19 @@
                   class="subject-column"
                   fxLayoutAlign="space-between center"
                 >
-                  {{ element.fromname }} > {{ element.subject }}
+                  <div>
+                    <span *ngIf="element.fromname">
+                      {{ element.fromname }} >
+                    </span>
+                    {{ element.subject }}
+                  </div>
                   <button
                     mat-icon-button
                     matTooltip="Edit email details"
                     matTooltipPosition="left"
                     aria-label="Edit email details"
                     color="primary"
-                    (click)="changeElementDetails(element)"
+                    (click)="changeElementDetails(element, item.key)"
                     [disabled]="res.isLoading$ | async"
                   >
                     <mat-icon>edit</mat-icon>
@@ -124,7 +140,12 @@
                     aria-label="Open in builder"
                     color="accent"
                     [disabled]="res.isLoading$ | async"
-                    (click)="editTemplate$.next(element.emailtemplateid)"
+                    (click)="
+                      editTemplate$.next({
+                        id: element.emailtemplateid,
+                        type: item.key
+                      })
+                    "
                   >
                     <mat-icon>build</mat-icon>
                   </button>
@@ -139,7 +160,7 @@
                   >
                     <mat-icon>streetview</mat-icon>
                   </button>
-                  <button
+                  <!-- <button
                     mat-icon-button
                     matTooltip="Send a test email"
                     matTooltipPosition="above"
@@ -149,7 +170,7 @@
                     (click)="sendTestEmail(element)"
                   >
                     <mat-icon>send</mat-icon>
-                  </button>
+                  </button> -->
                 </mat-cell>
               </ng-container>
 
