@@ -32,6 +32,9 @@ export interface IServerTemplateResponse {
 }
 
 export interface IPreview {
+  id?: string;
+  type?: string;
+  name?: string;
   html: string;
   is_edited: boolean;
 }

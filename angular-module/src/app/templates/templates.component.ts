@@ -1,9 +1,8 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { BehaviorSubject, of, Observable, Subject, EMPTY, NEVER, empty } from 'rxjs';
-import { tap, exhaustMap, map, switchMap, mapTo } from 'rxjs/operators';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
+import { tap, exhaustMap, map } from 'rxjs/operators';
 
 import {
-  ITemplate,
   IServerTemplateResponse,
   IPreview, IPerfexEmail, IPostRespose,
   ISaveDetailsResponse
@@ -21,7 +20,7 @@ import { AppService } from '../app.service';
   styleUrls: ['./templates.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TemplatesComponent implements OnInit {
+export class TemplatesComponent {
   constructor(
     public res: ResourceService,
     private ngb: IpEmailBuilderService,
@@ -34,8 +33,8 @@ export class TemplatesComponent implements OnInit {
   getActiveLanguage$ = this.activeLanguage$.pipe(
     map(lang => lang || this.app.activeLanguage)
   );
-  previewTemplate$ = new BehaviorSubject<string>(null);
-  editTemplate$ = new BehaviorSubject<{ id: string, type: string }>(null);
+  previewTemplate$ = new BehaviorSubject<{ id: string, name: string }>(null);
+  editTemplate$ = new BehaviorSubject<{ id: string, type: string, name: string }>(null);
   openSidenav$ = new Subject<boolean>();
 
   // Create observables for resources
@@ -50,7 +49,7 @@ export class TemplatesComponent implements OnInit {
     }),
   );
 
-  getTemplate$: Observable<IPEmail> = this.editTemplate$.pipe(
+  getTemplate$: Observable<{ email: IPEmail, name: string }> = this.editTemplate$.pipe(
     exhaustMap(em => em && this.res.getTemplate(em.id).pipe(
       tap(_ =>
         this.ngb.MergeTags = new Set(
@@ -59,12 +58,14 @@ export class TemplatesComponent implements OnInit {
             .map(({ key }) => key)
           ]
         )),
+      map(email => ({ email, name: em.name })),
       tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
     ) || of(null))
   );
 
   getTemplateBody$: Observable<IPreview> = this.previewTemplate$.pipe(
-    exhaustMap(id => id && this.res.getTemplateBody(id).pipe(
+    exhaustMap(em => em && this.res.getTemplateBody(em.id).pipe(
+      map(data => ({ ...data, ...em })),
       tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
     ) || of(null)),
   );
@@ -81,7 +82,13 @@ export class TemplatesComponent implements OnInit {
     }
     if (closeState) { this.editTemplate$.next(null); }
     this.previewTemplate$.next(null);
-    this.openSidenav$.next(!closeState);
+    requestAnimationFrame(() => this.openSidenav$.next(!closeState));
+  }
+
+  async openBuilderFromPreview({ id, type, name }: IPreview) {
+    this.previewTemplate$.next(null);
+    await this.closeSidenav();
+    requestAnimationFrame(() => this.editTemplate$.next({ id, type, name }));
   }
 
   expansionPanelOpen(key?: string) {
@@ -168,9 +175,9 @@ export class TemplatesComponent implements OnInit {
   //   console.log(element.emailtemplateid);
   // }
 
-  ngOnInit() {
-    // this.activeLanguage$.next(this.activeLanguage);
-    // this.app.templatesCache.set(this.activeLanguage, this.templates);
-    // console.log(this.activeLanguage);
-  }
+  // ngOnInit() {
+  // this.activeLanguage$.next(this.activeLanguage);
+  // this.app.templatesCache.set(this.activeLanguage, this.templates);
+  // console.log(this.activeLanguage);
+  // }
 }

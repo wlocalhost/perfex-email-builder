@@ -23,11 +23,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
+import { KeyToLangPipe } from './key-to-lang.pipe';
 
 @NgModule({
   imports: [],
-  declarations: [],
+  declarations: [KeyToLangPipe],
   exports: [
     CommonModule,
     MatInputModule,
@@ -51,6 +51,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatListModule,
     MatDialogModule,
     MatSlideToggleModule,
+
+    KeyToLangPipe
   ],
 })
 export class SharedModule { }

@@ -18,7 +18,7 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
     BrowserAnimationsModule,
     SharedModule,
     TemplatesModule,
-    CampaignsModule
+    CampaignsModule,
     // AppRoutingModule,
   ],
   bootstrap: [AppComponent]

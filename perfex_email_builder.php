@@ -8,7 +8,7 @@ Module URI: https://wlocalhost.org/c/perfex-email-builder/23
 Author: Ion Prodan
 Author URI: https://dev.to/wanoo21
 Description: Beautiful e-mail templates, with no design experience needed.
-Version: 1.0.0
+Version: 2.0.0
 Requires at least: 2.4.*
 */
 
@@ -47,14 +47,14 @@ function perfex_email_builder_head_styles() {
 function perfex_email_builder_footer_scripts() {
     $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
     
-    echo '<script src="' . $builderAssetsPath . '/runtime-es2015.js" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/runtime-es5.js" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/polyfills-es2015.js" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/polyfills-es5.js" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/vendor-es2015.js" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/vendor-es5.js" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/main-es2015.js" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/main-es5.js" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/runtime-es2015.js?v=2" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/runtime-es5.js?v=2" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/polyfills-es2015.js?v=2" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/polyfills-es5.js?v=2" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/vendor-es2015.js?v=2" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/vendor-es5.js?v=2" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/main-es2015.js?v=2" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/main-es5.js?v=2" nomodule defer></script>' . PHP_EOL;
 }
 
 /**

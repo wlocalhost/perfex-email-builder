@@ -7,6 +7,7 @@ import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
 
 import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse, TMethod } from '../interfaces';
 import { environment } from '../environments/environment';
+import { readCookie } from './utils';
 
 
 
@@ -55,7 +56,7 @@ export class ResourceService {
   init(apiBase: string, csrfName: string, csrfToken: string) {
     this.apiBase = environment.production ? apiBase : '/admin/perfex_email_builder';
     this.csrfName = csrfName;
-    this.csrfToken = csrfToken;
+    this.csrfToken = readCookie('csrf_cookie_name') || csrfToken;
   }
 
   getTemplatesByLang(language: string) {
