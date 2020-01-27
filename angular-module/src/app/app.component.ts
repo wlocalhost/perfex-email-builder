@@ -1,8 +1,9 @@
 import { Component, ElementRef, Inject } from '@angular/core';
-import { ITemplate, IServerTemplateResponse } from 'src/interfaces';
+import { ITemplate } from 'src/interfaces';
 import { ResourceService } from './resource.service';
 import { IP_CONFIG, IForRootConf } from 'ip-email-builder';
 import { AppService } from './app.service';
+import { readCookie } from './utils';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,6 @@ export class AppComponent {
   mount: string;
   latest: ITemplate[];
 
-
   constructor(
     el: ElementRef<HTMLElement>,
     resourceService: ResourceService,
@@ -32,10 +32,8 @@ export class AppComponent {
     @Inject(IP_CONFIG) config: IForRootConf
   ) {
     const {
-      activeLanguage, templates, languages,
-      latest, mount, apiBase,
-      mergeFields,
-      csrfToken, csrfName
+      activeLanguage, templates, languages, mount, apiBase,
+      mergeFields, csrfToken, csrfName
     } = el.nativeElement.dataset;
 
     app.activeLanguage = activeLanguage;
@@ -44,10 +42,12 @@ export class AppComponent {
     app.templatesCache.set(activeLanguage, JSON.parse(templates));
 
     this.mount = mount;
-    this.latest = JSON.parse(latest);
 
     resourceService.init(apiBase, csrfName, csrfToken);
     config.uploadImagePath = `${apiBase}/upload`;
-    config.csrf = { name: csrfName, token: csrfToken };
+    config.csrf = {
+      name: csrfName,
+      token: readCookie('csrf_cookie_name') || csrfToken
+    };
   }
 }

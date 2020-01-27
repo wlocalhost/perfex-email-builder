@@ -29,13 +29,6 @@ class Perfex_email_builder extends AdminController {
           ['language' => $active_language],
           ['emailtemplateid', 'type', 'name', 'subject', 'fromname', 'active']
         );
-        $data['latest'] = $this->emailBuilder_model->getAll(
-            [],
-            ['emailtemplateid', 'updated_at'], 
-            $table = '_perfex_email_builder', 
-            $limit = 10, 
-            $orderBy = 'updated_at DESC'
-        );
         $data['languages'] = $this->emailBuilder_model->getEmailLanguages();
         $data['active_language'] = $active_language;
 
@@ -58,24 +51,6 @@ class Perfex_email_builder extends AdminController {
         hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');
 
         $this->load->view(EMAIL_BUILDER_MODULE_NAME, $data);
-    }
-
-    function array_flatten($array = null) {
-        $result = array();
-    
-        if (!is_array($array)) {
-            $array = func_get_args();
-        }
-    
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $result = array_merge($result, $this->array_flatten($value));
-            } else {
-                $result = array_merge($result, array($key => $value));
-            }
-        }
-    
-        return $result;
     }
 
     public function options() {

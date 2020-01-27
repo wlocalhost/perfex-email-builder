@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, throwError } from 'rxjs';
-import { catchError, map, finalize, tap } from 'rxjs/operators';
+import { BehaviorSubject, throwError, Subject } from 'rxjs';
+import { catchError, map, finalize, tap, takeUntil } from 'rxjs/operators';
 import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
 
 import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse, TMethod } from '../interfaces';
@@ -14,10 +14,11 @@ import { readCookie } from './utils';
 @Injectable({
   providedIn: 'root'
 })
-export class ResourceService {
+export class ResourceService implements OnDestroy {
   private apiBase: string;
   private csrfName: string;
   private csrfToken: string;
+  private onDestroy$ = new Subject<boolean>();
   isLoading$ = new BehaviorSubject(false);
 
   constructor(private http: HttpClient, private matSnack: MatSnackBar) { }
@@ -50,6 +51,7 @@ export class ResourceService {
       }),
       tap(() => this.matSnack.dismiss()),
       finalize(() => this.isLoading$.next(false)),
+      takeUntil(this.onDestroy$),
     );
   }
 
@@ -85,5 +87,12 @@ export class ResourceService {
   sendPostRequest<T>(body: FormData, path: string) {
     body.append(this.csrfName, this.csrfToken);
     return this.httpRequest<T>(path, {}, 'post', body);
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next(true);
+    this.onDestroy$.complete();
+    this.isLoading$.next(false);
+    this.isLoading$.complete();
   }
 }

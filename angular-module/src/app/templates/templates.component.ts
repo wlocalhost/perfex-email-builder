@@ -1,6 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
-import { tap, exhaustMap, map } from 'rxjs/operators';
+import { tap, exhaustMap, map, takeUntil } from 'rxjs/operators';
+import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
 
 import {
   IServerTemplateResponse,
@@ -8,10 +11,7 @@ import {
   ISaveDetailsResponse
 } from '../../interfaces';
 import { ResourceService } from '../resource.service';
-import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
-import { MatDialog } from '@angular/material/dialog';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { AppService } from '../app.service';
 
 @Component({
@@ -20,7 +20,10 @@ import { AppService } from '../app.service';
   styleUrls: ['./templates.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TemplatesComponent {
+export class TemplatesComponent implements OnDestroy {
+
+  private onDestroy$ = new Subject<boolean>();
+
   constructor(
     public res: ResourceService,
     private ngb: IpEmailBuilderService,
@@ -31,7 +34,8 @@ export class TemplatesComponent {
   displayedColumns = ['active', 'name', 'subject', 'actions'];
   activeLanguage$ = new BehaviorSubject<string>(null);
   getActiveLanguage$ = this.activeLanguage$.pipe(
-    map(lang => lang || this.app.activeLanguage)
+    map(lang => lang || this.app.activeLanguage),
+    takeUntil(this.onDestroy$),
   );
   previewTemplate$ = new BehaviorSubject<{ id: string, name: string }>(null);
   editTemplate$ = new BehaviorSubject<{ id: string, type: string, name: string }>(null);
@@ -47,6 +51,7 @@ export class TemplatesComponent {
       }
       return of(this.app.templatesCache.get(lang));
     }),
+    takeUntil(this.onDestroy$),
   );
 
   getTemplate$: Observable<{ email: IPEmail, name: string }> = this.editTemplate$.pipe(
@@ -60,7 +65,8 @@ export class TemplatesComponent {
         )),
       map(email => ({ email, name: em.name })),
       tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
-    ) || of(null))
+    ) || of(null)),
+    takeUntil(this.onDestroy$),
   );
 
   getTemplateBody$: Observable<IPreview> = this.previewTemplate$.pipe(
@@ -68,6 +74,7 @@ export class TemplatesComponent {
       map(data => ({ ...data, ...em })),
       tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
     ) || of(null)),
+    takeUntil(this.onDestroy$),
   );
 
   async closeSidenav() {
@@ -180,4 +187,16 @@ export class TemplatesComponent {
   // this.app.templatesCache.set(this.activeLanguage, this.templates);
   // console.log(this.activeLanguage);
   // }
+
+  ngOnDestroy() {
+    this.onDestroy$.next(true);
+    this.onDestroy$.complete();
+    // this.activeLanguage$.next(null);
+    this.activeLanguage$.complete();
+    // this.previewTemplate$.next(null);
+    this.previewTemplate$.complete();
+    // this.editTemplate$.next(null);
+    this.editTemplate$.complete();
+    this.openSidenav$.complete();
+  }
 }

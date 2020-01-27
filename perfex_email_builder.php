@@ -34,7 +34,7 @@ function before_parse_email_template_message($template) {
         $template->message = get_option('old_email_header') . $template->message . get_option('old_email_footer');
     }
 
-    return $template;
+    return hooks()->apply_filters('after_parse_perfex_email_builder_template_message', $template);
 }
 
 function perfex_email_builder_head_styles() {
