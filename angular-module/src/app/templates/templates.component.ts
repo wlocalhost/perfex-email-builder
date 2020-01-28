@@ -63,6 +63,7 @@ export class TemplatesComponent implements OnDestroy {
             .map(({ key }) => key)
           ]
         )),
+      tap(() => this.ngb.previewTemplate.next(null)),
       map(email => ({ email, name: em.name })),
       tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
     ) || of(null)),
