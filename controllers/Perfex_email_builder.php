@@ -96,6 +96,7 @@ class Perfex_email_builder extends AdminController {
       if ($this->input->post() && $this->input->post('emailtemplateid') && $this->input->post('emailObject')) {
           $data = $this->input->post();
           $data['template'] = $this->input->post('template', false);
+          $data['emailObject'] = $this->input->post('emailObject', false);
           $success = $this->emailBuilder_model->update($data);
           return $this->json_output(['success' => $success]);
       }

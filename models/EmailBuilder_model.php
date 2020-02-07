@@ -116,7 +116,7 @@ class EmailBuilder_model extends App_Model {
     }
 
     public function update(array $data) {
-        $emailObject = json_encode(json_decode(stripslashes($data['emailObject']), true));
+        $emailObject = json_encode(json_decode($data['emailObject']));        
         $template = htmlspecialchars($data['template']);
 
         $this->db->where('emailtemplateid', $data['emailtemplateid']);
