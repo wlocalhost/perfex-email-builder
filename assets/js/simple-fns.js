@@ -1,5 +1,10 @@
 (function($) {
   'use strict';
+  $(document).on('keydown', function (event) {
+    if ($('mat-sidenav').hasClass('mat-drawer-opened')) {
+      event.preventDefault();
+    }
+  })
   $(document).ready(function() {
     $('form#saveEmailBuilderOptions').on('submit', function(ev) {
       ev.preventDefault();
