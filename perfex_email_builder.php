@@ -47,14 +47,14 @@ function perfex_email_builder_head_styles() {
 function perfex_email_builder_footer_scripts() {
     $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
     
-    echo '<script src="' . $builderAssetsPath . '/runtime-es2015.js?v=2" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/runtime-es5.js?v=2" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/polyfills-es2015.js?v=2" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/polyfills-es5.js?v=2" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/vendor-es2015.js?v=2" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/vendor-es5.js?v=2" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/main-es2015.js?v=2" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/main-es5.js?v=2" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/runtime-es2015.js?v=2.1" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/runtime-es5.js?v=2.1" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/polyfills-es2015.js?v=2.1" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/polyfills-es5.js?v=2.1" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/vendor-es2015.js?v=2.1" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/vendor-es5.js?v=2.1" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/main-es2015.js?v=2.1" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/main-es5.js?v=2.1" nomodule defer></script>' . PHP_EOL;
 }
 
 /**
