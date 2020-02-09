@@ -15,34 +15,34 @@
     </mat-dialog-actions>
   </ng-container>
 
+  <ng-container *ngIf="data.type === 'confirm-revert'">
+    <h2 mat-dialog-title>Are you sure?</h2>
+    <mat-dialog-content>
+      You are about to revert this template to default Perfex template, all additional changes will be lost. Are you
+      sure?
+    </mat-dialog-content>
+    <mat-dialog-actions fxLayoutAlign="space-between center">
+      <button mat-button color="warn" cdkFocusInitial mat-dialog-close>
+        No, Go back!
+      </button>
+      <button mat-button [mat-dialog-close]="true">
+        Yes, Revert it.
+      </button>
+    </mat-dialog-actions>
+  </ng-container>
+
   <ng-container *ngIf="data.type === 'edit'">
     <h2 mat-dialog-title>Edit details</h2>
     <mat-dialog-content>
       <form #form>
-        <input
-          type="hidden"
-          name="emailtemplateid"
-          [value]="data.data.emailtemplateid"
-        />
+        <input type="hidden" name="emailtemplateid" [value]="data.data.emailtemplateid" />
         <mat-form-field appearance="fill">
           <mat-label>From Name</mat-label>
-          <input
-            matInput
-            name="fromname"
-            required
-            type="text"
-            [value]="data.data.fromname"
-          />
+          <input matInput name="fromname" required type="text" [value]="data.data.fromname" />
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Subject</mat-label>
-          <input
-            matInput
-            name="subject"
-            required
-            type="text"
-            [value]="data.data.subject"
-          />
+          <input matInput name="subject" required type="text" [value]="data.data.subject" />
         </mat-form-field>
       </form>
 
@@ -62,13 +62,7 @@
       <button mat-button mat-dialog-close>
         Cancel
       </button>
-      <button
-        mat-button
-        color="primary"
-        [disabled]="!checkValidity(form)"
-        [mat-dialog-close]="form"
-        cdkFocusInitial
-      >
+      <button mat-button color="primary" [disabled]="!checkValidity(form)" [mat-dialog-close]="form" cdkFocusInitial>
         Save
       </button>
     </mat-dialog-actions>

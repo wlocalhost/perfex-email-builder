@@ -1,8 +1,8 @@
-import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
-import { tap, exhaustMap, map, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, of, Observable, Subject, fromEvent, EMPTY } from 'rxjs';
+import { tap, exhaustMap, map, takeUntil, shareReplay } from 'rxjs/operators';
 import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
 
 import {
@@ -14,13 +14,15 @@ import { ResourceService } from '../resource.service';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { AppService } from '../app.service';
 
+interface IEditTemplate { id: string; type: string; name: string; email?: IPEmail; isEdited?: boolean; }
+
 @Component({
   selector: 'app-templates',
   templateUrl: './templates.component.html',
   styleUrls: ['./templates.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TemplatesComponent implements OnDestroy {
+export class TemplatesComponent implements OnInit, OnDestroy {
 
   private onDestroy$ = new Subject<boolean>();
 
@@ -38,7 +40,7 @@ export class TemplatesComponent implements OnDestroy {
     takeUntil(this.onDestroy$),
   );
   previewTemplate$ = new BehaviorSubject<{ id: string, name: string }>(null);
-  editTemplate$ = new BehaviorSubject<{ id: string, type: string, name: string }>(null);
+  editTemplate$ = new BehaviorSubject<IEditTemplate>(null);
   openSidenav$ = new Subject<boolean>();
 
   // Create observables for resources
@@ -54,19 +56,22 @@ export class TemplatesComponent implements OnDestroy {
     takeUntil(this.onDestroy$),
   );
 
-  getTemplate$: Observable<{ email: IPEmail, name: string }> = this.editTemplate$.pipe(
-    exhaustMap(em => em && this.res.getTemplate(em.id).pipe(
-      tap(_ =>
-        this.ngb.MergeTags = new Set(
-          [...this.app.mergeFields
-            .filter(({ type }) => type === em.type)
-            .map(({ key }) => key)
-          ]
-        )),
-      tap(() => this.ngb.previewTemplate.next(null)),
-      map(email => ({ email, name: em.name })),
-      tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
-    ) || of(null)),
+  getTemplate$: Observable<IEditTemplate> = this.editTemplate$.pipe(
+    exhaustMap(em => {
+      if (!em) { return of(null); }
+      if (em.email) { return of(em); }
+      return this.res.getTemplate(em.id).pipe(map(email => ({ ...em, ...email })));
+    }),
+    tap(em => {
+      if (em) {
+        this.ngb.MergeTags = new Set([...this.app.mergeFields
+          .filter(({ type }) => type === em.type)
+          .map(({ key }) => key)
+        ]);
+      }
+    }),
+    tap(() => this.ngb.previewTemplate.next(null)),
+    tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data))),
     takeUntil(this.onDestroy$),
   );
 
@@ -78,9 +83,9 @@ export class TemplatesComponent implements OnDestroy {
     takeUntil(this.onDestroy$),
   );
 
-  async closeSidenav() {
+  async closeSidenav(askAboutChanges = true) {
     let closeState = true;
-    if (this.ngb.hasChanges && this.editTemplate$.getValue()) {
+    if (askAboutChanges && this.ngb.hasChanges && this.editTemplate$.getValue()) {
       closeState = await this.dialog.open(ModalDialogComponent, {
         data: { type: 'confirm' },
         width: '300px',
@@ -106,7 +111,7 @@ export class TemplatesComponent implements OnDestroy {
     return localStorage.getItem('expansionPanelOpened') || 'client';
   }
 
-  async saveEmail(closeSidenav: true) {
+  async saveEmail(data: IEditTemplate, closeSidenav = false) {
     let success = true;
     if (this.ngb.hasChanges) {
       try {
@@ -117,6 +122,7 @@ export class TemplatesComponent implements OnDestroy {
         formData.append('template', template);
         const update = await this.res.sendPostRequest<IPostRespose>(formData, 'update').toPromise();
         success = update.success;
+        data.isEdited = true;
       } catch (e) {
         success = false;
         console.error(e);
@@ -178,16 +184,41 @@ export class TemplatesComponent implements OnDestroy {
     }
   }
 
+  async revertTemplateBack(isEdited: boolean) {
+    if (!isEdited) {
+      this.ngb.snackBar.open('You can\'t revert this tempalte, as it\'s already reverted.', null,
+        { duration: 3000 });
+    } else {
+      const currentEmail = this.editTemplate$.getValue();
+      this.dialog.open(ModalDialogComponent, {
+        data: { type: 'confirm-revert' },
+        width: '300px',
+        maxWidth: '100%'
+      })
+        .afterClosed().pipe(
+          map(Boolean),
+          exhaustMap(state => {
+            return state && this.res.revertTemplate(currentEmail.id) || EMPTY;
+          }),
+          // tap(email => requestAnimationFrame(() => this.openSidenav$.next(!!email))),
+          tap(revertedEmail => (this.ngb.Email = revertedEmail.email))
+        ).toPromise();
+    }
+  }
+
   // TODO: Send test email request
   // async sendTestEmail(element: IPerfexEmail) {
   //   console.log(element.emailtemplateid);
   // }
 
-  // ngOnInit() {
-  // this.activeLanguage$.next(this.activeLanguage);
-  // this.app.templatesCache.set(this.activeLanguage, this.templates);
-  // console.log(this.activeLanguage);
-  // }
+  ngOnInit() {
+    // fromEvent(document, 'keydown').pipe(
+    //   tap(event => {
+    //     console.log(event);
+    //   }),
+    //   takeUntil(this.onDestroy$)
+    // ).subscribe();
+  }
 
   ngOnDestroy() {
     this.onDestroy$.next(true);

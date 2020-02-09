@@ -128,6 +128,15 @@ class Perfex_email_builder extends AdminController {
       return $this->json_output(['success' => $success, 'updates' => $updates]);
     }
 
+    public function revertTemplate($id) {
+      $success = $this->emailBuilder_model->removeEditedEmail($id);
+      if ($success) {
+        $data = $this->emailBuilder_model->getEmailObject($id);
+        return $this->json_output($data);
+      }
+      return $this->json_output(['$success' => $success]);
+    }
+
     public function upload() {
         $this->load->helper('path');
         $media_folder = $this->app->get_media_folder();

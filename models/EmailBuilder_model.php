@@ -168,6 +168,10 @@ class EmailBuilder_model extends App_Model {
         }
     }
 
+    public function removeEditedEmail($id) {
+        return $this->db->where('emailtemplateid', $id)->delete($this->emailBuilderTable);
+    }
+
     public function send_email_template($template_slug, $email, $merge_fields, $ticketid = '', $cc = '') {
         return $this->emails_model->send_email_template($template_slug, $email, $merge_fields, $ticketid, $cc);
     }

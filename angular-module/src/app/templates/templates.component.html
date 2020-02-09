@@ -1,52 +1,28 @@
 <mat-sidenav-container (backdropClick)="closeSidenav()" style="width: 100%;">
   <mat-sidenav-content>
-    <div
-      fxLayout="column wrap"
-      fxLayoutAlign="top center"
-      fxLayoutGap="1rem"
-      class="mat-typography"
-    >
+    <div fxLayout="column wrap" fxLayoutAlign="top center" fxLayoutGap="1rem" class="mat-typography">
       <mat-toolbar class="mat-elevation-z2">
-        <mat-progress-bar
-          mode="indeterminate"
-          style="position: absolute;"
-          *ngIf="res.isLoading$ | async"
-        ></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate" style="position: absolute;" *ngIf="res.isLoading$ | async">
+        </mat-progress-bar>
         <mat-toolbar-row>
           <h1>Email templates</h1>
           <div style="margin-left: auto;" fxLayout fxLayoutGap="1rem">
-            <button
-              mat-flat-button
-              color="primary"
-              class="capitalize"
-              (click)="activeLanguage$.next(app.activeLanguage)"
-            >
+            <button mat-flat-button color="primary" class="capitalize"
+              (click)="activeLanguage$.next(app.activeLanguage)">
               {{ app.activeLanguage }}
             </button>
-            <button
-              mat-stroked-button
-              color="primary"
-              class="capitalize"
-              *ngIf="(getActiveLanguage$ | async) !== app.activeLanguage"
-            >
+            <button mat-stroked-button color="primary" class="capitalize"
+              *ngIf="(getActiveLanguage$ | async) !== app.activeLanguage">
               {{ getActiveLanguage$ | async }}
             </button>
-            <button
-              mat-flat-button
-              [matMenuTriggerFor]="langMenu"
-              [disabled]="res.isLoading$ | async"
-            >
+            <button mat-flat-button [matMenuTriggerFor]="langMenu" [disabled]="res.isLoading$ | async">
               Other languages
             </button>
             <mat-menu #langMenu="matMenu">
               <ng-template matMenuContent>
                 <ng-container *ngFor="let lang of app.languages">
-                  <button
-                    *ngIf="(getActiveLanguage$ | async) !== lang"
-                    mat-menu-item
-                    class="capitalize"
-                    (click)="activeLanguage$.next(lang)"
-                  >
+                  <button *ngIf="(getActiveLanguage$ | async) !== lang" mat-menu-item class="capitalize"
+                    (click)="activeLanguage$.next(lang)">
                     {{ lang | keyToLang }}
                   </button>
                 </ng-container>
@@ -55,15 +31,10 @@
           </div>
         </mat-toolbar-row>
       </mat-toolbar>
-      <div
-        style="padding: 1rem;max-width: 1400px;width: 100%;box-sizing: border-box;"
-      >
+      <div style="padding: 1rem;max-width: 1400px;width: 100%;box-sizing: border-box;">
         <mat-accordion fxFlex>
-          <mat-expansion-panel
-            *ngFor="let item of getTemplates$ | async | keyvalue"
-            [expanded]="item.key === expansionPanelOpen()"
-            (opened)="expansionPanelOpen(item.key)"
-          >
+          <mat-expansion-panel *ngFor="let item of getTemplates$ | async | keyvalue"
+            [expanded]="item.key === expansionPanelOpen()" (opened)="expansionPanelOpen(item.key)">
             <mat-expansion-panel-header>
               <mat-panel-title class="capitalize">
                 {{ item.key | keyToLang }}
@@ -77,14 +48,9 @@
               <ng-container matColumnDef="active">
                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                  <mat-slide-toggle
-                    matTooltip="Change active status"
-                    matTooltipPosition="above"
-                    disableRipple
-                    [checked]="+element.active === 1"
-                    [disabled]="res.isLoading$ | async"
-                    (change)="changeActiveStatus($event, element)"
-                  ></mat-slide-toggle>
+                  <mat-slide-toggle matTooltip="Change active status" matTooltipPosition="above" disableRipple
+                    [checked]="+element.active === 1" [disabled]="res.isLoading$ | async"
+                    (change)="changeActiveStatus($event, element)"></mat-slide-toggle>
                 </mat-cell>
               </ng-container>
 
@@ -100,76 +66,44 @@
                 <mat-header-cell *matHeaderCellDef>
                   From Name > Subject
                 </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let element"
-                  class="subject-column"
-                  fxLayoutAlign="space-between center"
-                >
+                <mat-cell *matCellDef="let element" class="subject-column" fxLayoutAlign="space-between center">
                   <div>
                     <span *ngIf="element.fromname">
                       {{ element.fromname }} >
                     </span>
                     {{ element.subject }}
                   </div>
-                  <button
-                    mat-icon-button
-                    matTooltip="Edit email details"
-                    matTooltipPosition="left"
-                    aria-label="Edit email details"
-                    color="primary"
-                    (click)="changeElementDetails(element, item.key)"
-                    [disabled]="res.isLoading$ | async"
-                  >
+                  <button mat-icon-button matTooltip="Edit email details" matTooltipPosition="left"
+                    aria-label="Edit email details" color="primary" (click)="changeElementDetails(element, item.key)"
+                    [disabled]="res.isLoading$ | async">
                     <mat-icon>edit</mat-icon>
                   </button>
                 </mat-cell>
               </ng-container>
 
               <ng-container matColumnDef="actions">
-                <mat-header-cell
-                  *matHeaderCellDef
-                  fxFlex="0 0 144px"
-                  fxLayoutAlign="flex-end center"
-                >
+                <mat-header-cell *matHeaderCellDef fxFlex="0 0 144px" fxLayoutAlign="flex-end center">
                   Actions
                 </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let element"
-                  fxLayoutAlign="flex-end"
-                  fxFlex="0 0 auto"
-                >
-                  <button
-                    mat-icon-button
-                    matTooltip="Open on builder"
-                    matTooltipPosition="above"
-                    aria-label="Open on builder"
-                    color="accent"
-                    [disabled]="res.isLoading$ | async"
-                    (click)="
+                <mat-cell *matCellDef="let element" fxLayoutAlign="flex-end" fxFlex="0 0 auto">
+                  <button mat-icon-button matTooltip="Open on builder" matTooltipPosition="above"
+                    aria-label="Open on builder" color="accent" [disabled]="res.isLoading$ | async" (click)="
                       editTemplate$.next({
                         id: element.emailtemplateid,
                         type: item.key,
                         name: element.name
                       })
-                    "
-                  >
+                    ">
                     <mat-icon>dashboard</mat-icon>
                   </button>
-                  <button
-                    mat-icon-button
-                    matTooltip="Preview"
-                    matTooltipPosition="above"
-                    aria-label="Preview"
-                    color="accent"
-                    [disabled]="res.isLoading$ | async"
-                    (click)="
+                  <button mat-icon-button matTooltip="Preview" matTooltipPosition="above" aria-label="Preview"
+                    color="accent" [disabled]="res.isLoading$ | async" (click)="
                       previewTemplate$.next({
                         id: element.emailtemplateid,
                         type: item.key,
                         name: element.name
                       })
-                    "
-                  >
+                    ">
                     <mat-icon *ngIf="+element.active === 1">
                       visibility
                     </mat-icon>
@@ -193,42 +127,28 @@
 
               <mat-header-row *matHeaderRowDef="displayedColumns">
               </mat-header-row>
-              <mat-row
-                *matRowDef="let row; columns: displayedColumns"
-              ></mat-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
             </mat-table>
           </mat-expansion-panel>
         </mat-accordion>
       </div>
     </div>
   </mat-sidenav-content>
-  <mat-sidenav
-    [opened]="openSidenav$ | async"
-    position="end"
-    disableClose
-    mode="over"
-    style="width: 1200px; max-width: 80%;"
-  >
+  <mat-sidenav [opened]="openSidenav$ | async" position="end" disableClose mode="over"
+    style="width: 1200px; max-width: 80%;">
     <ng-container *ngIf="getTemplateBody$ | async as data">
       <mat-toolbar color="primary">
         <mat-toolbar-row>
           <span>{{ data.name }}</span>
           <span *ngIf="!data.is_edited">&nbsp;[Unedited]</span>
-          <button
-            mat-flat-button
-            color="accent"
-            style="margin-left: auto;"
-            (click)="openBuilderFromPreview(data)"
-          >
+          <button mat-flat-button color="accent" style="margin-left: auto;" (click)="openBuilderFromPreview(data)">
             Edit it on builder
           </button>
         </mat-toolbar-row>
       </mat-toolbar>
 
-      <ip-preview-template
-        [template]="data.html"
-        style="height: 100%;justify-content: center;"
-      ></ip-preview-template>
+      <ip-preview-template [template]="data.html" style="height: 100%;justify-content: center;">
+      </ip-preview-template>
     </ng-container>
 
     <ng-container *ngIf="getTemplate$ | async as data">
@@ -236,19 +156,22 @@
         <mat-toolbar-row>
           <span>{{ data.name }}</span>
           <div style="margin-left: auto;" fxLayoutGap="0.5rem">
-            <button mat-flat-button color="accent" (click)="saveEmail()">
+            <button mat-flat-button color="accent" (click)="saveEmail(data)">
               Save
             </button>
-            <button mat-flat-button color="accent" (click)="saveEmail(true)">
+            <button mat-flat-button color="accent" (click)="saveEmail(data, true)">
               Save and Close
             </button>
           </div>
         </mat-toolbar-row>
       </mat-toolbar>
-      <ip-email-builder
-        style="height: inherit;"
-        [email]="data.email"
-      ></ip-email-builder>
+      <ip-email-builder style="height: inherit;" [email]="data.email">
+        <div class="top-actions">
+          <button mat-flat-button color="accent" (click)="revertTemplateBack(data.isEdited)">
+            Revert template
+          </button>
+        </div>
+      </ip-email-builder>
     </ng-container>
   </mat-sidenav>
 </mat-sidenav-container>

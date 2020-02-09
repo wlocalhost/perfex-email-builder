@@ -1,10 +1,13 @@
 (function($) {
   'use strict';
-  $(document).on('keydown', function (event) {
-    if ($('mat-sidenav').hasClass('mat-drawer-opened')) {
-      event.preventDefault();
-    }
-  })
+  // $(document).on('keydown', function (event) {
+  //   if ($('mat-sidenav').hasClass('mat-drawer-opened')) {
+  //     console.log(event);
+  //     event.stopPropagation();
+  //     event.stopImmediatePropagation();
+  //     // event.preventDefault();
+  //   }
+  // })
   $(document).ready(function() {
     $('form#saveEmailBuilderOptions').on('submit', function(ev) {
       ev.preventDefault();

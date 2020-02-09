@@ -72,19 +72,40 @@ export class ResourceService implements OnDestroy {
   getTemplate(emailtemplateid: string) {
     return this.httpRequest('getTemplate', { emailtemplateid }).pipe(
       map((res: IPerfexEmail) => {
-        return new IPEmail(res.emailObject || {
-          structures: [
-            new Structure('cols_1', [[new TextBlock(res.message)]])
-          ],
-          // general: {
-          //   previewText: 'dsd'
-          // }
-        });
+        return {
+          isEdited: !!res.emailObject,
+          email: new IPEmail(res.emailObject || {
+            structures: [
+              new Structure('cols_1', [[new TextBlock(res.message)]])
+            ],
+            // general: {
+            //   previewText: 'dsd'
+            // }
+          })
+        };
       })
     );
   }
 
-  sendPostRequest<T>(body: FormData, path: string) {
+  revertTemplate(emailtemplateid: string) {
+    return this.sendPostRequest(new FormData(), `revertTemplate/${emailtemplateid}`).pipe(
+      map((res: IPerfexEmail) => {
+        return {
+          isEdited: false,
+          email: new IPEmail({
+            structures: [
+              new Structure('cols_1', [[new TextBlock(res.message)]])
+            ],
+            // general: {
+            //   previewText: 'dsd'
+            // }
+          })
+        };
+      })
+    );
+  }
+
+  sendPostRequest<T>(body = new FormData(), path: string) {
     body.append(this.csrfName, this.csrfToken);
     return this.httpRequest<T>(path, {}, 'post', body);
   }

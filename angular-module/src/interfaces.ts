@@ -50,7 +50,7 @@ export interface ISidenavData {
   type: 'preview' | 'builder';
 }
 
-export type TMethod = 'get' | 'post' | 'put';
+export type TMethod = 'get' | 'post' | 'put' | 'delete';
 export interface IPostRespose {
   success: boolean;
 }
