@@ -18,15 +18,16 @@
   <ng-container *ngIf="data.type === 'confirm-revert'">
     <h2 mat-dialog-title>Are you sure?</h2>
     <mat-dialog-content>
-      You are about to revert this template to default Perfex template, all additional changes will be lost. Are you
-      sure?
+      <p>You are about to restore this template to default Perfex template, all additional changes will be lost.</p>
+      <p><strong><strong>This will affect only template body, not name nor subject.</strong></strong></p>
+      <p><strong>Are you sure?</strong></p>
     </mat-dialog-content>
     <mat-dialog-actions fxLayoutAlign="space-between center">
       <button mat-button color="warn" cdkFocusInitial mat-dialog-close>
         No, Go back!
       </button>
       <button mat-button [mat-dialog-close]="true">
-        Yes, Revert it.
+        Yes, Restore it.
       </button>
     </mat-dialog-actions>
   </ng-container>

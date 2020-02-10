@@ -73,11 +73,17 @@
                     </span>
                     {{ element.subject }}
                   </div>
-                  <button mat-icon-button matTooltip="Edit email details" matTooltipPosition="left"
-                    aria-label="Edit email details" color="primary" (click)="changeElementDetails(element, item.key)"
-                    [disabled]="res.isLoading$ | async">
-                    <mat-icon>edit</mat-icon>
-                  </button>
+                  <div fxLayout fxLayoutAlign="center center" fxLayoutGap="0.5rem">
+                    <span matTooltip="Last updated" matTooltipPosition="above">
+                      <span *ngIf="element.updated_at">{{ element.updated_at | date : 'short'}}</span>
+                      <span *ngIf="!element.updated_at">-</span>
+                    </span>
+                    <button mat-icon-button matTooltip="Edit email details" matTooltipPosition="left"
+                      aria-label="Edit email details" color="primary" (click)="changeElementDetails(element, item.key)"
+                      [disabled]="res.isLoading$ | async">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
                 </mat-cell>
               </ng-container>
 
@@ -88,11 +94,7 @@
                 <mat-cell *matCellDef="let element" fxLayoutAlign="flex-end" fxFlex="0 0 auto">
                   <button mat-icon-button matTooltip="Open on builder" matTooltipPosition="above"
                     aria-label="Open on builder" color="accent" [disabled]="res.isLoading$ | async" (click)="
-                      editTemplate$.next({
-                        id: element.emailtemplateid,
-                        type: item.key,
-                        name: element.name
-                      })
+                      editTemplate$.next(element)
                     ">
                     <mat-icon>dashboard</mat-icon>
                   </button>
@@ -168,7 +170,7 @@
       <ip-email-builder style="height: inherit;" [email]="data.email">
         <div class="top-actions">
           <button mat-flat-button color="accent" (click)="revertTemplateBack(data.isEdited)">
-            Revert template
+            Restore template
           </button>
         </div>
       </ip-email-builder>

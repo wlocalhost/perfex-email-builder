@@ -14,6 +14,7 @@ export interface IPerfexEmail {
   plaintext: string;
   slug: string;
   subject: string;
+  updated_at: string | Date;
   type: string;
 }
 
@@ -61,7 +62,7 @@ export interface ISaveDetailsResponse {
 }
 
 export interface IDialogData {
-  type: 'confirm' | 'edit' | 'test-email';
+  type: 'confirm' | 'confirm-revert' | 'edit' | 'test-email';
   data?: IObject;
   mergeFields?: IMergeField[];
 }

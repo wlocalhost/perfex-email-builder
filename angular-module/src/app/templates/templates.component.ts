@@ -1,8 +1,8 @@
-import { Component, ChangeDetectionStrategy, OnDestroy, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { BehaviorSubject, of, Observable, Subject, fromEvent, EMPTY } from 'rxjs';
-import { tap, exhaustMap, map, takeUntil, shareReplay } from 'rxjs/operators';
+import { BehaviorSubject, of, Observable, Subject, fromEvent, EMPTY, combineLatest } from 'rxjs';
+import { tap, exhaustMap, map, takeUntil } from 'rxjs/operators';
 import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
 
 import {
@@ -14,7 +14,7 @@ import { ResourceService } from '../resource.service';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { AppService } from '../app.service';
 
-interface IEditTemplate { id: string; type: string; name: string; email?: IPEmail; isEdited?: boolean; }
+interface IEditTemplate extends IPerfexEmail { email?: IPEmail; isEdited?: boolean; }
 
 @Component({
   selector: 'app-templates',
@@ -30,7 +30,8 @@ export class TemplatesComponent implements OnInit, OnDestroy {
     public res: ResourceService,
     private ngb: IpEmailBuilderService,
     public app: AppService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private el: ElementRef
   ) { }
 
   displayedColumns = ['active', 'name', 'subject', 'actions'];
@@ -40,8 +41,24 @@ export class TemplatesComponent implements OnInit, OnDestroy {
     takeUntil(this.onDestroy$),
   );
   previewTemplate$ = new BehaviorSubject<{ id: string, name: string }>(null);
-  editTemplate$ = new BehaviorSubject<IEditTemplate>(null);
+  // tslint:disable-next-line: max-line-length
+  editTemplate$ = new BehaviorSubject<IEditTemplate | { emailtemplateid: string, type: string, name: string, email?: IPEmail, updated_at?: string | Date }>(null);
   openSidenav$ = new Subject<boolean>();
+  keyDowns$ = combineLatest([
+    this.openSidenav$, fromEvent<KeyboardEvent>(this.el.nativeElement, 'keydown')
+  ]).pipe(
+    tap(([sidenavOpened, event]) => {
+      if (sidenavOpened) {
+        event.stopImmediatePropagation();
+      }
+      // event.stopPropagation();
+      // const target = event.target as HTMLDivElement;
+      // if (sidenavOpened && target.classList.contains('ql-editor')) {
+      //   event.stopImmediatePropagation();
+      // }
+    }),
+    takeUntil(this.onDestroy$)
+  );
 
   // Create observables for resources
   getTemplates$: Observable<IServerTemplateResponse> = this.getActiveLanguage$.pipe(
@@ -60,7 +77,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
     exhaustMap(em => {
       if (!em) { return of(null); }
       if (em.email) { return of(em); }
-      return this.res.getTemplate(em.id).pipe(map(email => ({ ...em, ...email })));
+      return this.res.getTemplate(em.emailtemplateid).pipe(map(email => ({ ...em, ...email })));
     }),
     tap(em => {
       if (em) {
@@ -101,7 +118,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
   async openBuilderFromPreview({ id, type, name }: IPreview) {
     this.previewTemplate$.next(null);
     await this.closeSidenav();
-    requestAnimationFrame(() => this.editTemplate$.next({ id, type, name }));
+    requestAnimationFrame(() => this.editTemplate$.next({ emailtemplateid: id, type, name }));
   }
 
   expansionPanelOpen(key?: string) {
@@ -117,12 +134,14 @@ export class TemplatesComponent implements OnInit, OnDestroy {
       try {
         const { email, template } = await this.ngb.saveEmail();
         const formData = new FormData();
-        formData.append('emailtemplateid', this.editTemplate$.getValue().id);
+        const element = this.editTemplate$.getValue();
+        formData.append('emailtemplateid', element.emailtemplateid);
         formData.append('emailObject', JSON.stringify(email));
         formData.append('template', template);
         const update = await this.res.sendPostRequest<IPostRespose>(formData, 'update').toPromise();
         success = update.success;
         data.isEdited = true;
+        element.updated_at = new Date();
       } catch (e) {
         success = false;
         console.error(e);
@@ -149,6 +168,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
         .sendPostRequest<IPostRespose>(formData, 'changeActiveStatus').toPromise();
       if (update.success) {
         element.active = active;
+        element.updated_at = new Date();
       } else {
         source.toggle();
       }
@@ -180,16 +200,17 @@ export class TemplatesComponent implements OnInit, OnDestroy {
     if (res.success) {
       element.subject = res.updates.subject;
       element.fromname = res.updates.fromname;
+      element.updated_at = new Date();
       this.ngb.snackBar.open('The details have been saved.', null, { duration: 3000 });
     }
   }
 
   async revertTemplateBack(isEdited: boolean) {
     if (!isEdited) {
-      this.ngb.snackBar.open('You can\'t revert this tempalte, as it\'s already reverted.', null,
+      this.ngb.snackBar.open('You can\'t restore this tempalte, as it\'s not edited.', null,
         { duration: 3000 });
     } else {
-      const currentEmail = this.editTemplate$.getValue();
+      const element = this.editTemplate$.getValue();
       this.dialog.open(ModalDialogComponent, {
         data: { type: 'confirm-revert' },
         width: '300px',
@@ -198,10 +219,11 @@ export class TemplatesComponent implements OnInit, OnDestroy {
         .afterClosed().pipe(
           map(Boolean),
           exhaustMap(state => {
-            return state && this.res.revertTemplate(currentEmail.id) || EMPTY;
+            return state && this.res.revertTemplate(element.emailtemplateid) || EMPTY;
           }),
           // tap(email => requestAnimationFrame(() => this.openSidenav$.next(!!email))),
-          tap(revertedEmail => (this.ngb.Email = revertedEmail.email))
+          tap(revertedEmail => (this.ngb.Email = revertedEmail.email)),
+          tap(() => delete element.updated_at)
         ).toPromise();
     }
   }
@@ -212,12 +234,9 @@ export class TemplatesComponent implements OnInit, OnDestroy {
   // }
 
   ngOnInit() {
-    // fromEvent(document, 'keydown').pipe(
-    //   tap(event => {
-    //     console.log(event);
-    //   }),
-    //   takeUntil(this.onDestroy$)
-    // ).subscribe();
+    this.keyDowns$.subscribe();
+
+    console.log(this.el.nativeElement);
   }
 
   ngOnDestroy() {

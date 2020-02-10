@@ -64,6 +64,32 @@ class EmailBuilder_model extends App_Model {
         return $templates;
     }
 
+    public function getAllTemplates($where = [], array $select = []) {
+        // $select[] = [`{$this->emailBuilderTable}'.updated_at`];
+        $this->db->select($select);
+        if ($where) {
+            $this->db->where($where);
+        }
+        $items = $this->db->get($this->emailTplsTable)->result_array();
+
+        $this->db->select(['emailtemplateid', 'updated_at']);
+        $savedItems = $this->db->get($this->emailBuilderTable)->result_array();
+
+        $templates = [];
+
+        foreach ($items as $item) {
+            if (!isset($item['type'])) continue;
+            $type = $item['type'];
+            unset($item['type']);
+            $key = array_search($item['emailtemplateid'], array_column($savedItems, 'emailtemplateid'));
+            if ($key) {
+                $item['updated_at'] = $savedItems[$key]['updated_at'];
+            }
+            $templates[$type][] = $item;
+        }
+        return $templates;
+    }
+
     public function getEmailLanguages() {
         $languages = [];
         $this->db->select('language');

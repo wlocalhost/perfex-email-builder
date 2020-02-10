@@ -25,7 +25,7 @@ class Perfex_email_builder extends AdminController {
         $active_language = get_option('active_language');
 
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
-        $data['templates'] = $this->emailBuilder_model->getAll(
+        $data['templates'] = $this->emailBuilder_model->getAllTemplates(
           ['language' => $active_language],
           ['emailtemplateid', 'type', 'name', 'subject', 'fromname', 'active']
         );

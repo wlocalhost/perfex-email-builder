@@ -20,6 +20,8 @@ hooks()->add_action('before_tickets_email_templates', 'before_tickets_email_temp
 hooks()->add_filter('module_' . EMAIL_BUILDER_MODULE_NAME . '_action_links', 'email_builder_setup_action_links');
 
 // hooks set filter before_parse_email_template_message
+// Later I need to implement the hooks
+// hooks()->apply_filters('after_parse_perfex_email_builder_template_message', $template);
 hooks()->add_filter('before_parse_email_template_message', 'before_parse_email_template_message');
 function before_parse_email_template_message($template) {
     $CI = &get_instance();
@@ -34,7 +36,7 @@ function before_parse_email_template_message($template) {
         $template->message = get_option('old_email_header') . $template->message . get_option('old_email_footer');
     }
 
-    return hooks()->apply_filters('after_parse_perfex_email_builder_template_message', $template);
+    return $template;
 }
 
 function perfex_email_builder_head_styles() {
@@ -47,14 +49,14 @@ function perfex_email_builder_head_styles() {
 function perfex_email_builder_footer_scripts() {
     $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
     
-    echo '<script src="' . $builderAssetsPath . '/runtime-es2015.js?v=2.1" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/runtime-es5.js?v=2.1" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/polyfills-es2015.js?v=2.1" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/polyfills-es5.js?v=2.1" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/vendor-es2015.js?v=2.1" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/vendor-es5.js?v=2.1" nomodule defer></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/main-es2015.js?v=2.1" type="module"></script>' . PHP_EOL;
-    echo '<script src="' . $builderAssetsPath . '/main-es5.js?v=2.1" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/runtime-es2015.js?v=2.2" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/runtime-es5.js?v=2.2" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/polyfills-es2015.js?v=2.2" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/polyfills-es5.js?v=2.2" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/vendor-es2015.js?v=2.2" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/vendor-es5.js?v=2.2" nomodule defer></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/main-es2015.js?v=2.2" type="module"></script>' . PHP_EOL;
+    echo '<script src="' . $builderAssetsPath . '/main-es5.js?v=2.2" nomodule defer></script>' . PHP_EOL;
 }
 
 /**
