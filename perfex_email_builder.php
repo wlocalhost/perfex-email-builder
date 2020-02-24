@@ -22,21 +22,48 @@ hooks()->add_filter('module_' . EMAIL_BUILDER_MODULE_NAME . '_action_links', 'em
 // hooks set filter before_parse_email_template_message
 // Later I need to implement the hooks
 // hooks()->apply_filters('after_parse_perfex_email_builder_template_message', $template);
-hooks()->add_filter('before_parse_email_template_message', 'before_parse_email_template_message');
+hooks()->add_filter('after_parse_email_template_message', 'before_parse_email_template_message', 0);
 function before_parse_email_template_message($template) {
     $CI = &get_instance();
+    
+    if (!$CI->input->post('email_template_custom')) {        
+        $CI->db->where('emailtemplateid', $template->emailtemplateid);
+        $savedTemplate = $CI->db->get(db_prefix() . '_perfex_email_builder')->row();
 
-    $CI->db->where('emailtemplateid', $template->emailtemplateid);
-    $savedTemplate = $CI->db->get(db_prefix() . '_perfex_email_builder')->row();
+        // Remove default insert track code filter
+        hooks()->remove_filter('after_parse_email_template_message', 'email_tracking_inject_in_body');
+        $template->has_tracking = in_array($template->slug, get_available_tracking_templates_slugs()) && $template->tmp_id;
 
-    if ($savedTemplate) {
-        $template->message = html_entity_decode($savedTemplate->template);
-        $template->plaintext = 0;
-    } else {
-        $template->message = get_option('old_email_header') . $template->message . get_option('old_email_footer');
+        if ($savedTemplate) {
+            // Add tracker code into body
+            if ($template->has_tracking) {                
+                $doc = new DOMDocument();
+                $doc->loadHTML(html_entity_decode($savedTemplate->template));
+    
+                $trackImg = $doc->createElement('img');
+                $trackImg->setAttribute("src", site_url('check_emails/track/' . $template->tmp_id));
+                $trackImg->setAttribute("alt", "");
+                $trackImg->setAttribute("width", "1");
+                $trackImg->setAttribute("height", "1");
+                $trackImg->setAttribute("border", "0");
+    
+                $body = $doc->getElementsByTagName('body')->item(0);
+                $body->appendChild($trackImg);
+                
+                $template->message = $doc->saveHTML();
+            } else {
+                $template->message = html_entity_decode($savedTemplate->template);
+            }
+            $template->plaintext = 0;
+        } else {
+            if ($template->has_tracking) {
+                $template->message .= '<img src="' . site_url('check_emails/track/' . $template->tmp_id) . '" alt="" width="1" height="1" border="0">';
+            }
+            $template->message = get_option('old_email_header') . $template->message . get_option('old_email_footer');
+        }
     }
 
-    return $template;
+    return hooks()->apply_filters('after_parse_perfex_email_builder_template_message', $template);;
 }
 
 function perfex_email_builder_head_styles() {
