@@ -4,11 +4,9 @@
     "outDir": "../out-tsc/app",
     "types": ["node"]
   },
-  "files": [
-    "main.ts",
-    "polyfills.ts"
-  ],
-  "include": [
-    "src/**/*.d.ts"
-  ]
+  "files": ["main.ts", "polyfills.ts"],
+  "include": ["src/**/*.d.ts"],
+  "angularCompilerOptions": {
+    "enableIvy": true
+  }
 }

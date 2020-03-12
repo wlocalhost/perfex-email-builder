@@ -124,5 +124,8 @@
       }
     }
   },
-  "defaultProject": "perfex-email-builder"
+  "defaultProject": "perfex-email-builder",
+  "cli": {
+    "analytics": "b0ab54ac-c197-4c61-b741-2217eb1faa9b"
+  }
 }

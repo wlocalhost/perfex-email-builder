@@ -87,7 +87,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
         ]);
       }
     }),
-    tap(() => this.ngb.previewTemplate.next(null)),
+    // tap(() => this.ngb.previewTemplate.next(null)),
     tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data))),
     takeUntil(this.onDestroy$),
   );
