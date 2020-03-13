@@ -3,12 +3,12 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
-Module Name: Perfex Email Builder
-Module URI: https://wlocalhost.org/c/perfex-email-builder/23
+Module Name: Perfex CRM Email Builder
+Module URI: https://codecanyon.net/item/drag-and-drop-perfex-crm-email-builder/25269927
 Author: Ion Prodan
-Author URI: https://dev.to/wanoo21
+Author URI: https://yon.fun?utm_source=perfex-module
 Description: Beautiful e-mail templates, with no design experience needed.
-Version: 2.0.0
+Version: 2.0.1
 Requires at least: 2.4.*
 */
 
@@ -63,7 +63,7 @@ function before_parse_email_template_message($template) {
         }
     }
 
-    return hooks()->apply_filters('after_parse_perfex_email_builder_template_message', $template);;
+    return hooks()->apply_filters('after_parse_perfex_email_builder_template_message', $template);
 }
 
 function perfex_email_builder_head_styles() {
@@ -76,14 +76,14 @@ function perfex_email_builder_head_styles() {
 function perfex_email_builder_footer_scripts() {
     $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
     
-    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/runtime-es2015.js?v=2.2" type="module"></script>' . PHP_EOL;
-    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/runtime-es5.js?v=2.2" nomodule defer></script>' . PHP_EOL;
-    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/polyfills-es2015.js?v=2.2" type="module"></script>' . PHP_EOL;
-    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/polyfills-es5.js?v=2.2" nomodule defer></script>' . PHP_EOL;
-    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/vendor-es2015.js?v=2.2" type="module"></script>' . PHP_EOL;
-    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/vendor-es5.js?v=2.2" nomodule defer></script>' . PHP_EOL;
-    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/main-es2015.js?v=2.2" type="module"></script>' . PHP_EOL;
-    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/main-es5.js?v=2.2" nomodule defer></script>' . PHP_EOL;
+    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/runtime-es2015.js?v=2.0.2" type="module"></script>' . PHP_EOL;
+    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/runtime-es5.js?v=2.0.2" nomodule defer></script>' . PHP_EOL;
+    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/polyfills-es2015.js?v=2.0.2" type="module"></script>' . PHP_EOL;
+    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/polyfills-es5.js?v=2.0.2" nomodule defer></script>' . PHP_EOL;
+    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/vendor-es2015.js?v=2.0.2" type="module"></script>' . PHP_EOL;
+    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/vendor-es5.js?v=2.0.2" nomodule defer></script>' . PHP_EOL;
+    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/main-es2015.js?v=2.0.2" type="module"></script>' . PHP_EOL;
+    echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/main-es5.js?v=2.0.2" nomodule defer></script>' . PHP_EOL;
 }
 
 /**

@@ -5,7 +5,6 @@
     <?php hooks()->do_action('before_start_perfex_email_builder'); ?>
     <app-root
         data-mount="templates"
-        data-templates='<?php echo json_encode($templates); ?>'
         data-languages='<?php echo json_encode($languages); ?>'
         data-active-language='<?php echo $active_language; ?>'
         data-merge-fields='<?php echo json_encode($merge_fields); ?>'

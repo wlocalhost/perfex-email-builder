@@ -9,10 +9,8 @@ import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse, TMethod } fro
 import { environment } from '../environments/environment';
 import { readCookie } from './utils';
 
-
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'any'
 })
 export class ResourceService implements OnDestroy {
   private apiBase: string;

@@ -25,10 +25,10 @@ class Perfex_email_builder extends AdminController {
         $active_language = get_option('active_language');
 
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
-        $data['templates'] = $this->emailBuilder_model->getAllTemplates(
-          ['language' => $active_language],
-          ['emailtemplateid', 'type', 'name', 'subject', 'fromname', 'active']
-        );
+        // $data['templates'] = $this->emailBuilder_model->getAllTemplates(
+        //   ['language' => $active_language],
+        //   ['emailtemplateid', 'type', 'name', 'subject', 'fromname', 'active']
+        // );
         $data['languages'] = $this->emailBuilder_model->getEmailLanguages();
         $data['active_language'] = $active_language;
 
@@ -82,7 +82,7 @@ class Perfex_email_builder extends AdminController {
     }
 
     public function templates() {
-        $data = $this->emailBuilder_model->getAll(
+        $data = $this->emailBuilder_model->getAllTemplates(
           ['language' => $this->input->get('language')],
           ['emailtemplateid', 'type', 'name', 'subject', 'active', 'fromname']
         );

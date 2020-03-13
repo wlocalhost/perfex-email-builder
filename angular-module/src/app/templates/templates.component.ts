@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, ElementRef } fro
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { BehaviorSubject, of, Observable, Subject, fromEvent, EMPTY, combineLatest } from 'rxjs';
-import { tap, exhaustMap, map, takeUntil } from 'rxjs/operators';
+import { tap, exhaustMap, map, takeUntil, take } from 'rxjs/operators';
 import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
 
 import {
@@ -79,7 +79,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
       if (em.email) { return of(em); }
       return this.res.getTemplate(em.emailtemplateid).pipe(map(email => ({ ...em, ...email })));
     }),
-    tap(em => {
+    tap((em: IEditTemplate) => {
       if (em) {
         this.ngb.MergeTags = new Set([...this.app.mergeFields
           .filter(({ type }) => type === em.type)
@@ -145,16 +145,14 @@ export class TemplatesComponent implements OnInit, OnDestroy {
       } catch (e) {
         success = false;
         console.error(e);
-        this.ngb.snackBar.open('Something bad happened.', 'Close');
+        this.ngb.notify('Something bad happened.');
       }
     }
     if (closeSidenav && success) {
       await this.closeSidenav();
     }
     if (success) {
-      this.ngb.snackBar.open('Email template has been saved successfully.', null, {
-        duration: 3000
-      });
+      this.ngb.notify('Email template has been saved successfully.');
     }
   }
 
@@ -201,14 +199,13 @@ export class TemplatesComponent implements OnInit, OnDestroy {
       element.subject = res.updates.subject;
       element.fromname = res.updates.fromname;
       element.updated_at = new Date();
-      this.ngb.snackBar.open('The details have been saved.', null, { duration: 3000 });
+      this.ngb.notify('The details have been saved.');
     }
   }
 
-  async revertTemplateBack(isEdited: boolean) {
+  revertTemplateBack(isEdited: boolean) {
     if (!isEdited) {
-      this.ngb.snackBar.open('You can\'t restore this tempalte, as it\'s not edited.', null,
-        { duration: 3000 });
+      this.ngb.notify('You can\'t restore this template, as it\'s not edited.');
     } else {
       const element = this.editTemplate$.getValue();
       this.dialog.open(ModalDialogComponent, {
@@ -223,20 +220,14 @@ export class TemplatesComponent implements OnInit, OnDestroy {
           }),
           // tap(email => requestAnimationFrame(() => this.openSidenav$.next(!!email))),
           tap(revertedEmail => (this.ngb.Email = revertedEmail.email)),
-          tap(() => delete element.updated_at)
+          tap(() => delete element.updated_at),
+          take(1),
         ).toPromise();
     }
   }
 
-  // TODO: Send test email request
-  // async sendTestEmail(element: IPerfexEmail) {
-  //   console.log(element.emailtemplateid);
-  // }
-
   ngOnInit() {
     this.keyDowns$.subscribe();
-
-    console.log(this.el.nativeElement);
   }
 
   ngOnDestroy() {

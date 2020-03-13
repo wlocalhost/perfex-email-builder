@@ -1,17 +1,14 @@
-import { Component, ElementRef, Inject } from '@angular/core';
-import { ITemplate } from 'src/interfaces';
-import { ResourceService } from './resource.service';
+import { Component, ElementRef, Inject, OnInit } from '@angular/core';
 import { IP_CONFIG, IForRootConf } from 'ip-email-builder';
+
+import { ResourceService } from './resource.service';
 import { AppService } from './app.service';
 import { readCookie } from './utils';
 
 @Component({
   selector: 'app-root',
   template: `
-    <app-templates *ngIf="mount === 'templates';else campaigns"></app-templates>
-    <ng-template #campaigns>
-      <app-campaigns></app-campaigns>
-    </ng-template>
+    <app-templates></app-templates>
   `,
   styles: [`
     :host {
@@ -19,35 +16,39 @@ import { readCookie } from './utils';
       height: inherit;
       min-height: inherit;
     }
-  `]
+  `],
 })
-export class AppComponent {
-  mount: string;
-  latest: ITemplate[];
+export class AppComponent implements OnInit {
 
   constructor(
-    el: ElementRef<HTMLElement>,
-    resourceService: ResourceService,
-    app: AppService,
-    @Inject(IP_CONFIG) config: IForRootConf
-  ) {
+    private el: ElementRef<HTMLElement>,
+    private resourceService: ResourceService,
+    private app: AppService,
+    @Inject(IP_CONFIG) private config: IForRootConf,
+    // private viewContaineRef: ViewContainerRef,
+    // private componentResolver: ComponentFactoryResolver
+  ) { }
+
+  async ngOnInit() {
     const {
-      activeLanguage, templates, languages, mount, apiBase,
+      activeLanguage, languages, mount, apiBase,
       mergeFields, csrfToken, csrfName
-    } = el.nativeElement.dataset;
+    } = this.el.nativeElement.dataset;
 
-    app.activeLanguage = activeLanguage;
-    app.mergeFields = JSON.parse(mergeFields);
-    app.languages = JSON.parse(languages);
-    app.templatesCache.set(activeLanguage, JSON.parse(templates));
+    this.app.activeLanguage = activeLanguage;
+    this.app.mergeFields = JSON.parse(mergeFields);
+    this.app.languages = JSON.parse(languages);
 
-    this.mount = mount;
-
-    resourceService.init(apiBase, csrfName, csrfToken);
-    config.uploadImagePath = `${apiBase}/upload`;
-    config.csrf = {
-      name: csrfName,
-      token: readCookie('csrf_cookie_name') || csrfToken
-    };
+    this.resourceService.init(apiBase, csrfName, csrfToken);
+    this.config.uploadImagePath = `${apiBase}/upload`;
+    this.config.csrf = { name: csrfName, token: readCookie('csrf_cookie_name') || csrfToken };
+    // await this.lazyLoadComponent(mount)
   }
+
+  // async lazyLoadComponent(mount?: string) {
+  //   const { TemplatesComponent } = await import('./templates/templates.component');
+  //   const component = this.componentResolver.resolveComponentFactory(TemplatesComponent);
+  //   // this.viewContaineRef.clear();
+  //   this.viewContaineRef.createComponent(component);
+  // }
 }
