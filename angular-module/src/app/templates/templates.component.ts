@@ -17,7 +17,6 @@ import { AppService } from '../app.service';
 interface IEditTemplate extends IPerfexEmail { email?: IPEmail; isEdited?: boolean; }
 
 @Component({
-  selector: 'app-templates',
   templateUrl: './templates.component.html',
   styleUrls: ['./templates.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

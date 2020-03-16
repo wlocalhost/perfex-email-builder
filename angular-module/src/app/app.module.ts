@@ -28,9 +28,10 @@ import { KeyToLangPipe } from './key-to-lang.pipe';
 import { AppComponent } from './app.component';
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { TemplatesComponent } from './templates/templates.component';
+import { CampaignsComponent } from './campaigns/campaigns.component';
 
 @NgModule({
-  declarations: [AppComponent, ModalDialogComponent, KeyToLangPipe, TemplatesComponent],
+  declarations: [AppComponent, ModalDialogComponent, KeyToLangPipe, TemplatesComponent, CampaignsComponent],
   entryComponents: [ModalDialogComponent, TemplatesComponent],
   imports: [
     CommonModule,
