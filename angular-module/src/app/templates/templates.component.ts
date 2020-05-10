@@ -74,6 +74,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
 
   getTemplate$: Observable<IEditTemplate> = this.editTemplate$.pipe(
     exhaustMap(em => {
+      console.log(em);
       if (!em) { return of(null); }
       if (em.email) { return of(em); }
       return this.res.getTemplate(em.emailtemplateid).pipe(map(email => ({ ...em, ...email })));

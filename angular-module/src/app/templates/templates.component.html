@@ -94,7 +94,11 @@
                 <mat-cell *matCellDef="let element" fxLayoutAlign="flex-end" fxFlex="0 0 auto">
                   <button mat-icon-button matTooltip="Open on builder" matTooltipPosition="above"
                     aria-label="Open on builder" color="accent" [disabled]="res.isLoading$ | async" (click)="
-                      editTemplate$.next(element)
+                      editTemplate$.next({
+                        emailtemplateid: element.emailtemplateid,
+                        type: item.key,
+                        name: element.name
+                       })
                     ">
                     <mat-icon>dashboard</mat-icon>
                   </button>
