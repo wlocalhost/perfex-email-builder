@@ -1,38 +1,28 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, throwError, Subject } from 'rxjs';
-import { catchError, map, finalize, tap, takeUntil } from 'rxjs/operators';
+import { throwError, Subject, of } from 'rxjs';
+import { catchError, map, finalize, tap, shareReplay } from 'rxjs/operators';
 import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
 
-import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse, TMethod } from '../interfaces';
-import { environment } from '../environments/environment';
-import { readCookie } from './utils';
+import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse, TMethod, IMergeField } from '../interfaces';
 
 @Injectable({
   providedIn: 'any'
 })
-export class ResourceService implements OnDestroy {
-  private apiBase: string;
-  private csrfName: string;
-  private csrfToken: string;
-  private onDestroy$ = new Subject<boolean>();
-  isLoading$ = new BehaviorSubject(false);
+export class ResourceService {
+  private _isLoading$ = new Subject();
+
+  activeLanguage: string;
+  isLoading$ = this._isLoading$.asObservable();
 
   constructor(private http: HttpClient, private matSnack: MatSnackBar) { }
 
-  private httpRequest<T>(
-    path: string,
-    params: IParams = {},
-    method: TMethod = 'get',
-    body?: FormData
-  ) {
-    this.isLoading$.next(true);
+  private httpRequest<T>(path: string, params: IParams = {}, method: TMethod = 'get', body?: FormData) {
+    this._isLoading$.next(true);
     this.matSnack.open('Please wait...');
-    return this.http.request<T>(method, `${this.apiBase}/${path}`, {
-      params,
-      body,
-      responseType: 'json'
+    return this.http.request<T>(method, `${globalThis.NGB.baseUrl}/${path}`, {
+      params, body, responseType: 'json'
     }).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.error instanceof ErrorEvent) {
@@ -40,23 +30,16 @@ export class ResourceService implements OnDestroy {
         } else {
           console.error(`Backend returned code ${error.status}`);
           this.matSnack.open(
-            // tslint:disable-next-line: max-line-length
-            `Something bad happened; please try again later. If error persist, contact me at support@wlocalhost.org and include this message: "Error Status ${error.status}".`,
+            `Something bad happened; please try again later. "Error Status ${error.status}".`,
             'Close',
             { announcementMessage: 'Something bad happened; please try again later.' });
         }
-        return throwError('Something bad happened; please try again later.');
+        console.error(error);
+        return throwError(new Error('Something bad happened; please try again later.'));
       }),
       tap(() => this.matSnack.dismiss()),
-      finalize(() => this.isLoading$.next(false)),
-      takeUntil(this.onDestroy$),
+      finalize(() => this._isLoading$.next(false)),
     );
-  }
-
-  init(apiBase: string, csrfName: string, csrfToken: string) {
-    this.apiBase = environment.production ? apiBase : '/admin/perfex_email_builder';
-    this.csrfName = csrfName;
-    this.csrfToken = readCookie('csrf_cookie_name') || csrfToken;
   }
 
   getTemplatesByLang(language: string) {
@@ -75,10 +58,7 @@ export class ResourceService implements OnDestroy {
           email: new IPEmail(res.emailObject || {
             structures: [
               new Structure('cols_1', [[new TextBlock(res.message)]])
-            ],
-            // general: {
-            //   previewText: 'dsd'
-            // }
+            ]
           })
         };
       })
@@ -93,25 +73,31 @@ export class ResourceService implements OnDestroy {
           email: new IPEmail({
             structures: [
               new Structure('cols_1', [[new TextBlock(res.message)]])
-            ],
-            // general: {
-            //   previewText: 'dsd'
-            // }
+            ]
           })
         };
       })
     );
   }
 
-  sendPostRequest<T>(body = new FormData(), path: string) {
-    body.append(this.csrfName, this.csrfToken);
-    return this.httpRequest<T>(path, {}, 'post', body);
+  getAllLanguages() {
+    return this.httpRequest<string[]>('languages').pipe(
+      shareReplay(),
+      catchError(() => {
+        return of([] as string[]);
+      })
+    );
   }
 
-  ngOnDestroy() {
-    this.onDestroy$.next(true);
-    this.onDestroy$.complete();
-    this.isLoading$.next(false);
-    this.isLoading$.complete();
+  getAllMergeFields(type: string) {
+    return this.httpRequest<IMergeField[]>('mergeFields', { type }).pipe(
+      catchError(() => of([] as IMergeField[]))
+    );
+  }
+
+  sendPostRequest<T>(body = new FormData(), path: string) {
+    const { token, name } = globalThis.NGB.csrf;
+    body.append(name, token);
+    return this.httpRequest<T>(path, {}, 'post', body);
   }
 }

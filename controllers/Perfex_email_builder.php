@@ -22,35 +22,37 @@ class Perfex_email_builder extends AdminController {
             access_denied('email_templates');
         }
 
-        $active_language = get_option('active_language');
-
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
-        // $data['templates'] = $this->emailBuilder_model->getAllTemplates(
-        //   ['language' => $active_language],
-        //   ['emailtemplateid', 'type', 'name', 'subject', 'fromname', 'active']
-        // );
-        $data['languages'] = $this->emailBuilder_model->getEmailLanguages();
-        $data['active_language'] = $active_language;
-
-        $merge_fields = [];
-        foreach ($this->app_merge_fields->all() as $val) {
-            foreach($val as $type => $fields) {
-                foreach($fields as $key => $value) {
-                    unset($value['format']);
-                    unset($value['templates']);
-                    unset($value['available']);
-                    $value['type'] = $type;
-                    $merge_fields[] = $value;
-                }
-            }
-        }
-
-        $data['merge_fields'] = $merge_fields;
+        $data['active_language'] = get_option('active_language');
 
         hooks()->add_action('app_admin_head', 'perfex_email_builder_head_styles');
         hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');
 
         $this->load->view(EMAIL_BUILDER_MODULE_NAME, $data);
+    }
+
+    public function languages() {
+      return $this->json_output($this->emailBuilder_model->getEmailLanguages());
+    }
+
+    public function mergeFields() {
+      $requestedType = $this->input->get('type');
+      $merge_fields = [];
+      if ($requestedType) {
+        foreach ($this->app_merge_fields->all() as $val) {
+            foreach($val as $type => $fields) {
+                foreach($fields as $key => $value) {
+                  if ($type === $requestedType) {
+                    unset($value['format']);
+                    unset($value['templates']);
+                    unset($value['available']);
+                    $merge_fields[] = $value;
+                  }
+                }
+            }
+        }
+      }
+      return $this->json_output($merge_fields);
     }
 
     public function options() {

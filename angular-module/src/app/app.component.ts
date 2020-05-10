@@ -1,9 +1,5 @@
-import { Component, ElementRef, Inject, OnInit, ViewContainerRef, ComponentFactoryResolver, ViewChild, TemplateRef } from '@angular/core';
-import { IP_CONFIG, IForRootConf } from 'ip-email-builder';
+import { Component, ViewContainerRef, ComponentFactoryResolver, ViewChild, TemplateRef } from '@angular/core';
 
-import { ResourceService } from './resource.service';
-import { AppService } from './app.service';
-import { readCookie } from './utils';
 
 @Component({
   selector: 'app-root',
@@ -18,32 +14,11 @@ import { readCookie } from './utils';
     }
   `],
 })
-export class AppComponent implements OnInit {
-  @ViewChild(TemplateRef, { read: ViewContainerRef })
-  private templateRef: ViewContainerRef;
+export class AppComponent {
+  @ViewChild(TemplateRef, { read: ViewContainerRef }) private templateRef: ViewContainerRef;
 
-  constructor(
-    private el: ElementRef<HTMLElement>,
-    private resourceService: ResourceService,
-    private app: AppService,
-    @Inject(IP_CONFIG) private config: IForRootConf,
-    private componentFactory: ComponentFactoryResolver,
-  ) { }
-
-  async ngOnInit() {
-    const {
-      activeLanguage, languages, mount, apiBase,
-      mergeFields, csrfToken, csrfName
-    } = this.el.nativeElement.dataset;
-
-    this.app.activeLanguage = activeLanguage;
-    this.app.mergeFields = JSON.parse(mergeFields);
-    this.app.languages = JSON.parse(languages);
-
-    this.resourceService.init(apiBase, csrfName, csrfToken);
-    this.config.uploadImagePath = `${apiBase}/upload`;
-    this.config.csrf = { name: csrfName, token: readCookie('csrf_cookie_name') || csrfToken };
-    await this.lazyLoadComponent(mount)
+  constructor(private componentFactory: ComponentFactoryResolver) {
+    this.lazyLoadComponent(globalThis.NGB.mount)
   }
 
   async lazyLoadComponent(mount?: string) {

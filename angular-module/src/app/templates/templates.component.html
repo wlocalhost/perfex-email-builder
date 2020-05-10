@@ -7,22 +7,16 @@
         <mat-toolbar-row>
           <h1>Email templates</h1>
           <div style="margin-left: auto;" fxLayout fxLayoutGap="1rem">
-            <button mat-flat-button color="primary" class="capitalize"
-              (click)="activeLanguage$.next(app.activeLanguage)">
-              {{ app.activeLanguage }}
-            </button>
-            <button mat-stroked-button color="primary" class="capitalize"
-              *ngIf="(getActiveLanguage$ | async) !== app.activeLanguage">
-              {{ getActiveLanguage$ | async }}
+            <button mat-flat-button color="primary" class="capitalize" *ngIf="getActiveLanguage$ | async as activeLang">
+              {{ activeLang }}
             </button>
             <button mat-flat-button [matMenuTriggerFor]="langMenu" [disabled]="res.isLoading$ | async">
               Other languages
             </button>
             <mat-menu #langMenu="matMenu">
               <ng-template matMenuContent>
-                <ng-container *ngFor="let lang of app.languages">
-                  <button *ngIf="(getActiveLanguage$ | async) !== lang" mat-menu-item class="capitalize"
-                    (click)="activeLanguage$.next(lang)">
+                <ng-container *ngFor="let lang of languages$ | async">
+                  <button mat-menu-item class="capitalize" (click)="changeLanguage(lang)">
                     {{ lang | keyToLang }}
                   </button>
                 </ng-container>
@@ -93,23 +87,12 @@
                 </mat-header-cell>
                 <mat-cell *matCellDef="let element" fxLayoutAlign="flex-end" fxFlex="0 0 auto">
                   <button mat-icon-button matTooltip="Open on builder" matTooltipPosition="above"
-                    aria-label="Open on builder" color="accent" [disabled]="res.isLoading$ | async" (click)="
-                      editTemplate$.next({
-                        emailtemplateid: element.emailtemplateid,
-                        type: item.key,
-                        name: element.name
-                       })
-                    ">
+                    aria-label="Open on builder" color="accent" [disabled]="res.isLoading$ | async"
+                    (click)="editTemplate(element, item.key)">
                     <mat-icon>dashboard</mat-icon>
                   </button>
                   <button mat-icon-button matTooltip="Preview" matTooltipPosition="above" aria-label="Preview"
-                    color="accent" [disabled]="res.isLoading$ | async" (click)="
-                      previewTemplate$.next({
-                        id: element.emailtemplateid,
-                        type: item.key,
-                        name: element.name
-                      })
-                    ">
+                    color="accent" [disabled]="res.isLoading$ | async" (click)="previewTemplate(element, item.key)">
                     <mat-icon *ngIf="+element.active === 1">
                       visibility
                     </mat-icon>
@@ -129,9 +112,9 @@
       </div>
     </div>
   </mat-sidenav-content>
-  <mat-sidenav [opened]="openSidenav$ | async" position="end" disableClose mode="over"
-    style="width: 1200px; max-width: 80%;">
-    <ng-container *ngIf="getTemplateBody$ | async as data">
+  <mat-sidenav #sidenav position="end" disableClose style="width: 1200px; max-width: 80%;">
+
+    <ng-container *ngIf="getPreviewTemplate$ | async as data">
       <mat-toolbar color="primary">
         <mat-toolbar-row>
           <span>{{ data.name }}</span>
@@ -141,12 +124,10 @@
           </button>
         </mat-toolbar-row>
       </mat-toolbar>
-
-      <ip-preview-template [template]="data.html" style="height: 100%;justify-content: center;">
-      </ip-preview-template>
+      <ip-preview-template [template]="data.html" style="height: 100%;justify-content: center;"></ip-preview-template>
     </ng-container>
 
-    <ng-container *ngIf="getTemplate$ | async as data">
+    <ng-container *ngIf="getTemplateObject$ | async as data">
       <mat-toolbar color="primary">
         <mat-toolbar-row>
           <span>{{ data.name }}</span>
@@ -168,5 +149,6 @@
         </div>
       </ip-email-builder>
     </ng-container>
+
   </mat-sidenav>
 </mat-sidenav-container>

@@ -31,7 +31,13 @@ import { TemplatesComponent } from './templates/templates.component';
 import { CampaignsComponent } from './campaigns/campaigns.component';
 
 @NgModule({
-  declarations: [AppComponent, ModalDialogComponent, KeyToLangPipe, TemplatesComponent, CampaignsComponent],
+  declarations: [
+    AppComponent,
+    ModalDialogComponent,
+    KeyToLangPipe,
+    TemplatesComponent,
+    CampaignsComponent
+  ],
   entryComponents: [ModalDialogComponent, TemplatesComponent],
   imports: [
     CommonModule,
@@ -60,8 +66,12 @@ import { CampaignsComponent } from './campaigns/campaigns.component';
     MatSlideToggleModule,
     IpEmailBuilderModule.forRoot({
       xApiKey: 'ULMnDh2ens78ge40yU29Q7bbF6r0N5B96VNbebCJ',
+      uploadImagePath: `${globalThis.NGB.baseUrl}/upload`,
+      uploadImageName: 'image',
+      csrf: globalThis.NGB.csrf,
       useDownloadButton: false,
-      useSaveButton: false
+      useSaveButton: false,
+      templateListIfEmpty: false
     })
   ],
   bootstrap: [AppComponent]

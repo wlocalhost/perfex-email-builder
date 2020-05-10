@@ -1,20 +1,23 @@
-import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSidenav } from '@angular/material/sidenav';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { BehaviorSubject, of, Observable, Subject, fromEvent, EMPTY, combineLatest } from 'rxjs';
-import { tap, exhaustMap, map, takeUntil, take } from 'rxjs/operators';
+import { BehaviorSubject, of, Subject, fromEvent, EMPTY, from } from 'rxjs';
+import { tap, exhaustMap, map, takeUntil, take, catchError, finalize } from 'rxjs/operators';
 import { IPEmail, IpEmailBuilderService } from 'ip-email-builder';
 
-import {
-  IServerTemplateResponse,
-  IPreview, IPerfexEmail, IPostRespose,
-  ISaveDetailsResponse
-} from '../../interfaces';
+import { IPreview, IPerfexEmail, IPostRespose, ISaveDetailsResponse } from '../../interfaces';
 import { ResourceService } from '../resource.service';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
-import { AppService } from '../app.service';
 
 interface IEditTemplate extends IPerfexEmail { email?: IPEmail; isEdited?: boolean; }
+interface IDontKnow {
+  emailtemplateid: string,
+  type: string,
+  name: string,
+  email?: IPEmail,
+  updated_at?: string | Date
+}
 
 @Component({
   templateUrl: './templates.component.html',
@@ -22,87 +25,105 @@ interface IEditTemplate extends IPerfexEmail { email?: IPEmail; isEdited?: boole
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemplatesComponent implements OnInit, OnDestroy {
+  @ViewChild('sidenav') private sidenav: MatSidenav
 
   private onDestroy$ = new Subject<boolean>();
+  private activeLanguage$ = new BehaviorSubject<string>(null);
+  private previewTemplate$ = new BehaviorSubject<{ id: string, name: string }>(null);
+  private editTemplateObject$ = new BehaviorSubject<IEditTemplate | IDontKnow>(null);
+
+  displayedColumns = ['active', 'name', 'subject', 'actions'];
 
   constructor(
     public res: ResourceService,
     private ngb: IpEmailBuilderService,
-    public app: AppService,
     private dialog: MatDialog,
-    private el: ElementRef
+    private el: ElementRef,
   ) { }
 
-  displayedColumns = ['active', 'name', 'subject', 'actions'];
-  activeLanguage$ = new BehaviorSubject<string>(null);
+  languages$ = this.res.getAllLanguages().pipe(
+    exhaustMap(langs => this.getActiveLanguage$.pipe(
+      map(activeLang => langs.filter(lang => ![activeLang].includes(lang)))
+    )),
+    takeUntil(this.onDestroy$)
+  );
   getActiveLanguage$ = this.activeLanguage$.pipe(
-    map(lang => lang || this.app.activeLanguage),
+    map(lang => lang || globalThis.NGB.activeLanguage),
     takeUntil(this.onDestroy$),
   );
-  previewTemplate$ = new BehaviorSubject<{ id: string, name: string }>(null);
-  // tslint:disable-next-line: max-line-length
-  editTemplate$ = new BehaviorSubject<IEditTemplate | { emailtemplateid: string, type: string, name: string, email?: IPEmail, updated_at?: string | Date }>(null);
-  openSidenav$ = new Subject<boolean>();
-  keyDowns$ = combineLatest([
-    this.openSidenav$, fromEvent<KeyboardEvent>(this.el.nativeElement, 'keydown')
-  ]).pipe(
-    tap(([sidenavOpened, event]) => {
-      if (sidenavOpened) {
+  keyDowns$ = fromEvent<KeyboardEvent>(this.el.nativeElement, 'keydown').pipe(
+    tap((event) => {
+      if (this.sidenav.opened) {
         event.stopImmediatePropagation();
       }
-      // event.stopPropagation();
-      // const target = event.target as HTMLDivElement;
-      // if (sidenavOpened && target.classList.contains('ql-editor')) {
-      //   event.stopImmediatePropagation();
-      // }
     }),
     takeUntil(this.onDestroy$)
   );
 
-  // Create observables for resources
-  getTemplates$: Observable<IServerTemplateResponse> = this.getActiveLanguage$.pipe(
-    exhaustMap(lang => {
-      if (!this.app.templatesCache.has(lang)) {
-        return this.res.getTemplatesByLang(lang).pipe(
-          tap(tmpl => this.app.templatesCache.set(lang, tmpl)),
-        );
-      }
-      return of(this.app.templatesCache.get(lang));
-    }),
+  /**
+   * Get all templates by active language
+   */
+  getTemplates$ = this.getActiveLanguage$.pipe(
+    exhaustMap(lang => this.res.getTemplatesByLang(lang)),
     takeUntil(this.onDestroy$),
   );
 
-  getTemplate$: Observable<IEditTemplate> = this.editTemplate$.pipe(
+  /**
+   * Open sidenav to edit current email
+   */
+  getTemplateObject$ = this.editTemplateObject$.pipe(
     exhaustMap(em => {
-      console.log(em);
       if (!em) { return of(null); }
       if (em.email) { return of(em); }
       return this.res.getTemplate(em.emailtemplateid).pipe(map(email => ({ ...em, ...email })));
     }),
-    tap((em: IEditTemplate) => {
-      if (em) {
-        this.ngb.MergeTags = new Set([...this.app.mergeFields
-          .filter(({ type }) => type === em.type)
-          .map(({ key }) => key)
-        ]);
-      }
+    exhaustMap(email => {
+      if (!email) { return of(null); }
+      return this.res.getAllMergeFields(email.type).pipe(
+        tap(mergeFields => {
+          this.ngb.MergeTags = new Set(mergeFields.map(({ key }) => key));
+        }),
+        map(() => email),
+        tap(() => {
+          this.previewTemplate$.next(null);
+          this.sidenav.open()
+        })
+      )
     }),
-    // tap(() => this.ngb.previewTemplate.next(null)),
-    tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data))),
     takeUntil(this.onDestroy$),
   );
 
-  getTemplateBody$: Observable<IPreview> = this.previewTemplate$.pipe(
+  getPreviewTemplate$ = this.previewTemplate$.pipe(
     exhaustMap(em => em && this.res.getTemplateBody(em.id).pipe(
       map(data => ({ ...data, ...em })),
-      tap(data => requestAnimationFrame(() => this.openSidenav$.next(!!data)))
+      tap(data => {
+        if (data) {
+          this.editTemplateObject$.next(null);
+          this.sidenav.open()
+        }
+      })
     ) || of(null)),
     takeUntil(this.onDestroy$),
   );
 
+  changeLanguage(lang: string) {
+    this.activeLanguage$.next(lang)
+  }
+
+  editTemplate(email: IPerfexEmail, type: string) {
+    this.editTemplateObject$.next({ emailtemplateid: email.emailtemplateid, type, name: email.name })
+  }
+
+  previewTemplate(email: IPerfexEmail) {
+    this.previewTemplate$.next({
+      id: email.emailtemplateid,
+      name: email.name
+    })
+  }
+
   async closeSidenav(askAboutChanges = true) {
     let closeState = true;
-    if (askAboutChanges && this.ngb.hasChanges && this.editTemplate$.getValue()) {
+    if (askAboutChanges && this.ngb.hasChanges && this.editTemplateObject$.getValue()) {
       closeState = await this.dialog.open(ModalDialogComponent, {
         data: { type: 'confirm' },
         width: '300px',
@@ -110,15 +131,17 @@ export class TemplatesComponent implements OnInit, OnDestroy {
       })
         .afterClosed().pipe(map(Boolean)).toPromise();
     }
-    if (closeState) { this.editTemplate$.next(null); }
+    if (closeState) {
+      await this.sidenav.close()
+      this.editTemplateObject$.next(null);
+    }
     this.previewTemplate$.next(null);
-    requestAnimationFrame(() => this.openSidenav$.next(!closeState));
   }
 
   async openBuilderFromPreview({ id, type, name }: IPreview) {
     this.previewTemplate$.next(null);
-    await this.closeSidenav();
-    requestAnimationFrame(() => this.editTemplate$.next({ emailtemplateid: id, type, name }));
+    await this.closeSidenav()
+    this.editTemplateObject$.next({ emailtemplateid: id, type, name })
   }
 
   expansionPanelOpen(key?: string) {
@@ -129,29 +152,38 @@ export class TemplatesComponent implements OnInit, OnDestroy {
   }
 
   async saveEmail(data: IEditTemplate, closeSidenav = false) {
-    let success = true;
+    // let success = true;
     if (this.ngb.hasChanges) {
-      try {
-        const { email, template } = await this.ngb.saveEmail();
-        const formData = new FormData();
-        const element = this.editTemplate$.getValue();
-        formData.append('emailtemplateid', element.emailtemplateid);
-        formData.append('emailObject', JSON.stringify(email));
-        formData.append('template', template);
-        const update = await this.res.sendPostRequest<IPostRespose>(formData, 'update').toPromise();
-        success = update.success;
-        data.isEdited = true;
-        element.updated_at = new Date();
-      } catch (e) {
-        success = false;
-        console.error(e);
-        this.ngb.notify('Something bad happened.');
+      const formData = new FormData();
+      const element = this.editTemplateObject$.getValue();
+      formData.append('emailtemplateid', element.emailtemplateid);
+      this.ngb.saveEmail().pipe(
+        exhaustMap(({ html }) => {
+          formData.append('emailObject', JSON.stringify(this.ngb.Email));
+          formData.append('template', html);
+          return this.res.sendPostRequest<IPostRespose>(formData, 'update')
+        }),
+        catchError((error) => {
+          console.error(error);
+          this.ngb.notify('Something bad happened.');
+          return EMPTY;
+        }),
+        take(1)
+      ).subscribe(({ success }) => {
+        if (success) {
+          data.isEdited = true;
+          element.updated_at = new Date();
+          if (closeSidenav) {
+            from(this.closeSidenav()).pipe(finalize(() => this.ngb.notify('Email template has been saved successfully.')))
+          } else {
+            this.ngb.notify('Email template has been saved successfully.');
+          }
+        }
+      })
+    } else {
+      if (closeSidenav) {
+        await this.closeSidenav();
       }
-    }
-    if (closeSidenav && success) {
-      await this.closeSidenav();
-    }
-    if (success) {
       this.ngb.notify('Email template has been saved successfully.');
     }
   }
@@ -175,12 +207,12 @@ export class TemplatesComponent implements OnInit, OnDestroy {
     }
   }
 
-  async changeElementDetails(element: IPerfexEmail, type: string) {
+  async changeElementDetails(element: IPerfexEmail) {
     const res: ISaveDetailsResponse = await this.dialog.open(ModalDialogComponent, {
       data: {
         type: 'edit',
         data: element,
-        mergeFields: this.app.mergeFields.filter(_ => type === _.type)
+        mergeFields: []// this.app.mergeFields.filter(_ => type === _.type)
       },
       width: '450px',
       maxWidth: '100%'
@@ -207,7 +239,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
     if (!isEdited) {
       this.ngb.notify('You can\'t restore this template, as it\'s not edited.');
     } else {
-      const element = this.editTemplate$.getValue();
+      const element = this.editTemplateObject$.getValue();
       this.dialog.open(ModalDialogComponent, {
         data: { type: 'confirm-revert' },
         width: '300px',
@@ -238,7 +270,6 @@ export class TemplatesComponent implements OnInit, OnDestroy {
     // this.previewTemplate$.next(null);
     this.previewTemplate$.complete();
     // this.editTemplate$.next(null);
-    this.editTemplate$.complete();
-    this.openSidenav$.complete();
+    this.editTemplateObject$.complete();
   }
 }
