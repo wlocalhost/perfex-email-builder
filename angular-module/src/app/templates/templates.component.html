@@ -1,4 +1,4 @@
-<mat-sidenav-container (backdropClick)="closeSidenav()" style="width: 100%;">
+<mat-sidenav-container (backdropClick)="backdropClick()" style="width: 100%;">
   <mat-sidenav-content>
     <div fxLayout="column wrap" fxLayoutAlign="top center" fxLayoutGap="1rem" class="mat-typography">
       <mat-toolbar class="mat-elevation-z2">
@@ -14,8 +14,8 @@
               Other languages
             </button>
             <mat-menu #langMenu="matMenu">
-              <ng-template matMenuContent>
-                <ng-container *ngFor="let lang of languages$ | async">
+              <ng-template matMenuContent *ngIf="languages$ | async as languages">
+                <ng-container *ngFor="let lang of languages">
                   <button mat-menu-item class="capitalize" (click)="changeLanguage(lang)">
                     {{ lang | keyToLang }}
                   </button>
@@ -69,8 +69,7 @@
                   </div>
                   <div fxLayout fxLayoutAlign="center center" fxLayoutGap="0.5rem">
                     <span matTooltip="Last updated" matTooltipPosition="above">
-                      <span *ngIf="element.updated_at">{{ element.updated_at | date : 'short'}}</span>
-                      <span *ngIf="!element.updated_at">-</span>
+                      {{ getUpdatedDate(element) | date : 'short'}}
                     </span>
                     <button mat-icon-button matTooltip="Edit email details" matTooltipPosition="left"
                       aria-label="Edit email details" color="primary" (click)="changeElementDetails(element, item.key)"
@@ -114,20 +113,47 @@
   </mat-sidenav-content>
   <mat-sidenav #sidenav position="end" disableClose style="width: 1200px; max-width: 80%;">
 
-    <ng-container *ngIf="getPreviewTemplate$ | async as data">
-      <mat-toolbar color="primary">
-        <mat-toolbar-row>
-          <span>{{ data.name }}</span>
-          <span *ngIf="!data.is_edited">&nbsp;[Unedited]</span>
-          <button mat-flat-button color="accent" style="margin-left: auto;" (click)="openBuilderFromPreview(data)">
-            Edit it on builder
-          </button>
-        </mat-toolbar-row>
-      </mat-toolbar>
-      <ip-preview-template [template]="data.html" style="height: 100%;justify-content: center;"></ip-preview-template>
+    <ng-container *ngIf="sidenavDetails$ | async as data">
+
+      <ng-container *ngIf="data.html">
+        <mat-toolbar color="primary">
+          <mat-toolbar-row>
+            <span>{{ data.name }}</span>
+            <span *ngIf="!data.is_edited">&nbsp;[Unedited]</span>
+            <button mat-flat-button color="accent" style="margin-left: auto;" (click)="openBuilderFromPreview(data)">
+              Edit it on builder
+            </button>
+          </mat-toolbar-row>
+        </mat-toolbar>
+        <ip-preview-template [template]="data.html" style="height: 100%;justify-content: center;">
+        </ip-preview-template>
+      </ng-container>
+
+      <ng-container *ngIf="data.template">
+        <mat-toolbar color="primary">
+          <mat-toolbar-row>
+            <span>{{ data.name }}</span>
+            <div style="margin-left: auto;" fxLayoutGap="0.5rem">
+              <button mat-flat-button color="accent" (click)="backdropClick()">
+                Close Builder
+              </button>
+            </div>
+          </mat-toolbar-row>
+        </mat-toolbar>
+        <ip-email-builder style="height: inherit;" [email]="data.template">
+          <div class="top-actions" fxLayoutGap="0.5rem">
+            <button mat-flat-button color="primary" (click)="saveEmail(data)">
+              Save
+            </button>
+            <button mat-flat-button color="accent" (click)="revertTemplateBack()">
+              Revert Template
+            </button>
+          </div>
+        </ip-email-builder>
+      </ng-container>
     </ng-container>
 
-    <ng-container *ngIf="getTemplateObject$ | async as data">
+    <!-- <ng-container *ngIf="getTemplateObject$ | async as data">
       <mat-toolbar color="primary">
         <mat-toolbar-row>
           <span>{{ data.name }}</span>
@@ -135,20 +161,20 @@
             <button mat-flat-button color="accent" (click)="saveEmail(data)">
               Save
             </button>
-            <button mat-flat-button color="accent" (click)="saveEmail(data, true)">
-              Save and Close
+            <button mat-flat-button color="accent" (click)="backdropClick()">
+              Close Builder
             </button>
           </div>
         </mat-toolbar-row>
       </mat-toolbar>
-      <ip-email-builder style="height: inherit;" [email]="data.email">
-        <div class="top-actions">
-          <button mat-flat-button color="accent" (click)="revertTemplateBack(data.isEdited)">
+      <ip-email-builder style="height: inherit;" [email]="data.template">
+        <div class=" top-actions">
+          <button mat-flat-button color="accent" (click)="revertTemplateBack()">
             Restore template
           </button>
         </div>
       </ip-email-builder>
-    </ng-container>
+    </ng-container> -->
 
   </mat-sidenav>
 </mat-sidenav-container>

@@ -106,7 +106,6 @@ class EmailBuilder_model extends App_Model {
         return $languages;
     }
 
-
     public function getEmailTemplate(string $emailtemplateid) {
         $data = array('is_edited' => false);
         $this->db->where(['emailtemplateid' => $emailtemplateid]);
@@ -127,13 +126,12 @@ class EmailBuilder_model extends App_Model {
     }
 
     public function getEmailObject(string $emailtemplateid) {
-        $this->db->select('emailObject');
+        $this->db->select(['emailObject']);
         $this->db->where(['emailtemplateid' => $emailtemplateid]);
         $query = $this->db->get($this->emailBuilderTable);
 
         if ($query->num_rows() >= 1) {
-            $data['emailObject'] = json_decode($query->row()->emailObject);
-            return $data;
+            return $query->row();
         } else {
             $this->db->select(['message', 'subject']);
             $this->db->where(['emailtemplateid' => $emailtemplateid]);

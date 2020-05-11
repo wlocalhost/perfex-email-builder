@@ -71,6 +71,7 @@ import { CampaignsComponent } from './campaigns/campaigns.component';
       csrf: globalThis.NGB.csrf,
       useDownloadButton: false,
       useSaveButton: false,
+      usePreviewButton: false,
       templateListIfEmpty: false
     })
   ],

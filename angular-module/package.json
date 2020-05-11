@@ -27,7 +27,7 @@
     "@ngx-translate/core": "^12.1.2",
     "angular-resizable-element": "^3.3.0",
     "core-js": "^3.6.5",
-    "ip-email-builder": "^8.2.0",
+    "ip-email-builder": "^8.2.1",
     "ngx-color": "^5.1.2",
     "ngx-quill": "^10.0.1",
     "quill": "^1.3.7",

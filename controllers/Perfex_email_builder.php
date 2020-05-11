@@ -74,13 +74,16 @@ class Perfex_email_builder extends AdminController {
     }
 
     public function getEmailTemplate() {
-        $data = $this->emailBuilder_model->getEmailTemplate($this->input->get('emailtemplateid'));
+        $data = $this->emailBuilder_model->getEmailTemplate($this->input->get('id'));
         return $this->json_output($data);
     }
 
     public function getTemplate() {
-        $data = $this->emailBuilder_model->getEmailObject($this->input->get('emailtemplateid'));
-        return $this->json_output($data);
+      $data = [];
+      $email = $this->emailBuilder_model->getEmailObject($this->input->get('id'));
+      $isEdited = isset($email->emailObject);
+      $data['template'] = $isEdited ? json_decode($email->emailObject) : $email;
+      return $this->json_output($data);
     }
 
     public function templates() {

@@ -33,9 +33,7 @@ export interface IServerTemplateResponse {
 }
 
 export interface IPreview {
-  id?: string;
-  type?: string;
-  name?: string;
+  id: string;
   html: string;
   is_edited: boolean;
 }
@@ -58,7 +56,7 @@ export interface IPostRespose {
 
 export interface ISaveDetailsResponse {
   success: boolean;
-  updates?: IPerfexEmail;
+  updates: IPerfexEmail;
 }
 
 export interface IDialogData {

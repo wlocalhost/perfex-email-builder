@@ -46,27 +46,16 @@ export class ResourceService {
     return this.httpRequest<IServerTemplateResponse>('templates', { language });
   }
 
-  getTemplateBody(emailtemplateid: string) {
-    return this.httpRequest<IPreview>('getEmailTemplate', { emailtemplateid });
+  getTemplateBody(id: string) {
+    return this.httpRequest<IPreview>('getEmailTemplate', { id });
   }
 
-  getTemplate(emailtemplateid: string) {
-    return this.httpRequest('getTemplate', { emailtemplateid }).pipe(
-      map((res: IPerfexEmail) => {
-        return {
-          isEdited: !!res.emailObject,
-          email: new IPEmail(res.emailObject || {
-            structures: [
-              new Structure('cols_1', [[new TextBlock(res.message)]])
-            ]
-          })
-        };
-      })
-    );
+  getTemplate(id: string) {
+    return this.httpRequest<{ template: IPEmail & { message: string } }>('getTemplate', { id })
   }
 
-  revertTemplate(emailtemplateid: string) {
-    return this.sendPostRequest(new FormData(), `revertTemplate/${emailtemplateid}`).pipe(
+  revertTemplate(id: string) {
+    return this.sendPostRequest(new FormData(), `revertTemplate/${id}`).pipe(
       map((res: IPerfexEmail) => {
         return {
           isEdited: false,
