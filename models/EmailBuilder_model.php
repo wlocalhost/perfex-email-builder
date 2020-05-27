@@ -85,7 +85,7 @@ class EmailBuilder_model extends App_Model {
             if ($key) {
                 $item['updated_at'] = $savedItems[$key]['updated_at'];
             }
-            $templates[$type][] = $item;
+            $templates[_l($type)][] = $item;
         }
         return $templates;
     }

@@ -59,17 +59,44 @@ class Perfex_email_builder extends AdminController {
         if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
         }
+        $tab = $this->input->get('group');
+
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME . '_options');
+        if(empty($tab)){
+          $tab = "main";
+        }
+        $data['group'] = $tab;
+        $data['tab']['view'] = 'includes/' . $tab;
+        
         if (!$this->input->is_ajax_request()) {
-            $this->load->view(EMAIL_BUILDER_MODULE_NAME . '_options', $data);
+          $this->load->view(EMAIL_BUILDER_MODULE_NAME . '_options', $data);
         } else {
-            $options = $this->input->post(null, false);
-
-            update_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder', $this->input->post('default_media_folder'));
-            update_option('old_email_header', html_entity_decode($options['old_email_header']));
-            update_option('old_email_footer', html_entity_decode($options['old_email_footer']));
-
-            return $this->json_output(['type' => 'success', 'status' => _l('options_updated')]);
+            $options = $this->input->post(null, false); 
+            if($options['group'] == 'admin_code'){
+              /**
+              *update admin custom style/js
+              */
+              update_option('perfex_email_builder_admin_custom_css', html_entity_decode($options['perfex_email_builder_admin_custom_css']));
+              update_option('perfex_email_builder_admin_custom_js', html_entity_decode($options['perfex_email_builder_admin_custom_js']));
+              $status = _l('code_admin_updated');
+            }
+            else if($options['group'] == 'client_code'){
+              /**
+              *update client custom style/js
+              */
+                update_option('perfex_email_builder_client_custom_css', html_entity_decode($options['perfex_email_builder_client_custom_css']));
+                update_option('perfex_email_builder_client_custom_js', html_entity_decode($options['perfex_email_builder_client_custom_js']));
+                $status = _l('code_client_updated');
+            }else{
+              /**
+              *update general options
+              */
+              update_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder', $this->input->post('default_media_folder'));
+              update_option('old_email_header', html_entity_decode($options['old_email_header']));
+              update_option('old_email_footer', html_entity_decode($options['old_email_footer']));
+              $status = _l('options_updated');
+            } 
+            return $this->json_output(['type' => 'success', 'status' => $status]);
         }
     }
 

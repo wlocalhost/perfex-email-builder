@@ -19,6 +19,10 @@ hooks()->add_action('admin_init', 'email_builder_init_menu_items');
 hooks()->add_action('before_tickets_email_templates', 'before_tickets_email_templates');
 hooks()->add_filter('module_' . EMAIL_BUILDER_MODULE_NAME . '_action_links', 'email_builder_setup_action_links');
 
+hooks()->add_action('app_admin_head', 'email_builder_custom_admin_css_load');
+hooks()->add_action('app_admin_footer','email_builder_custom_admin_js_load');
+hooks()->add_action('app_customers_head', 'email_builder_custom_client_css_load');
+hooks()->add_action('app_customers_footer', 'email_builder_custom_client_js_load');
 // hooks set filter before_parse_email_template_message
 // Later I need to implement the hooks
 // hooks()->apply_filters('after_parse_perfex_email_builder_template_message', $template);
@@ -73,7 +77,7 @@ function perfex_email_builder_head_styles() {
     echo '<link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />' . PHP_EOL;
     echo '<link href="' . $builderAssetsPath . '/styles.css" rel="stylesheet">' . PHP_EOL;
 }
-function perfex_email_builder_footer_scripts() {
+function perfex_email_builder_footer_scripts() {   
     $builderAssetsPath = module_dir_url(EMAIL_BUILDER_MODULE_NAME, 'assets/' . EMAIL_BUILDER_NGB_FOLDER);
 
     echo '<script data-cfasync="false" src="' . $builderAssetsPath . '/runtime-es2015.js?v=2.0.3" type="module"></script>' . PHP_EOL;
@@ -156,4 +160,54 @@ function email_builder_uninstall_hook() {
     delete_option('old_email_header');
     delete_option('old_email_footer');
     delete_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder');
+    delete_option('perfex_email_builder_admin_custom_js');
+    delete_option('perfex_email_builder_admin_custom_css');
+    delete_option('perfex_email_builder_client_custom_js');
+    delete_option('perfex_email_builder_client_custom_css');
+}
+
+
+
+/**
+* Custom CSS/JS client area 
+*/
+function email_builder_custom_client_css_load(){
+    $custom_css_clients_area = trim(get_option('perfex_email_builder_client_custom_css'));
+    if(!empty($custom_css_clients_area)){
+        echo '<style id="perfex_email_builder_custom_css">' . PHP_EOL;
+        $custom_css_clients_area = clear_textarea_breaks($custom_css_clients_area);
+        echo $custom_css_clients_area . PHP_EOL;
+        echo '</style>' . PHP_EOL;  
+    }
+    
+}
+function email_builder_custom_client_js_load(){
+    $custom_js_clients_area = trim(get_option('perfex_email_builder_client_custom_js'));
+    if(!empty($custom_js_clients_area)){
+        echo '<script id="perfex_email_builder_custom_js">' . PHP_EOL;
+        $custom_js_clients_area = clear_textarea_breaks($custom_js_clients_area);
+        echo $custom_js_clients_area . PHP_EOL; 
+        echo '</script>' . PHP_EOL;  
+    }
+}
+/**
+* Custom CSS/JS admin area 
+*/
+function email_builder_custom_admin_css_load(){
+    $custom_css_admin_area = trim(get_option('perfex_email_builder_admin_custom_css'));
+    if(!empty($custom_css_admin_area)){
+        echo '<style id="perfex_email_builder_custom_css">' . PHP_EOL;
+        $custom_css_admin_area = clear_textarea_breaks($custom_css_admin_area);
+        echo $custom_css_admin_area . PHP_EOL;
+        echo '</style>' . PHP_EOL;  
+    }
+}
+function email_builder_custom_admin_js_load(){
+   $custom_js_admin_area = trim(get_option('perfex_email_builder_admin_custom_js'));
+    if(!empty($custom_js_admin_area)){
+        echo '<script id="perfex_email_builder_custom_js">' . PHP_EOL;
+        $custom_js_admin_area = clear_textarea_breaks($custom_js_admin_area);
+        echo $custom_js_admin_area . PHP_EOL; 
+        echo '</script>' . PHP_EOL;  
+    }
 }
