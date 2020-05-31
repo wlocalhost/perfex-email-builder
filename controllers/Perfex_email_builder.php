@@ -193,4 +193,15 @@ class Perfex_email_builder extends AdminController {
             return $this->json_output(['success' => true, 'path' => site_url($media_folder) . $defaultMediaFolder . $this->upload->data('file_name')]);
         }
     }
+
+    public function update_widget(){
+      if (!has_permission('email_templates', '', 'view')) {
+            access_denied('email_templates');
+      }
+      if($this->input->post()){
+        $data = $this->input->post();
+        $success = $this->emailBuilder_model->update_widget($data);
+        return $this->json_output(['success' => $success]);
+      }
+    }
 }

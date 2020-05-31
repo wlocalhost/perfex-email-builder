@@ -9,6 +9,7 @@ class EmailBuilder_model extends App_Model {
         parent::__construct();
         $this->emailTplsTable = db_prefix() . 'emailtemplates';
         $this->emailBuilderTable = db_prefix() . '_perfex_email_builder';
+        $this->emailwidgetTable = db_prefix() . '_perfex_email_builder_widgets';
         $this->load->model('emails_model');
     }
 
@@ -156,6 +157,26 @@ class EmailBuilder_model extends App_Model {
                 'emailObject' => $emailObject, 
                 'template' => $template, 
                 'emailtemplateid' => $data['emailtemplateid']
+            ]);
+        }
+        return $success;
+    }
+
+    public function update_widget(array $data){
+        $module = json_encode(json_decode($data['module']));
+
+        $this->db->where('id', $data['widget_id']);
+        if ($this->db->get($this->emailwidgetTable)->row()) {
+            $this->db->where('id', $data['widget_id']);
+            $success = $this->db->update($this->emailwidgetTable, [
+                'name' => $data['name'], 
+                'module' => $module,
+            ]);
+        } else {
+            $success = $this->db->insert($this->emailwidgetTable, [
+                'name' => $data['name'], 
+                'module' => $module,
+                'created_at' =>date('Y-m-d H:i:s')
             ]);
         }
         return $success;
