@@ -182,6 +182,9 @@ class EmailBuilder_model extends App_Model {
         return $success;
     }
 
+    public function remove_widget($id){
+        return $this->db->where('id', $id)->delete($this->emailwidgetTable);
+    }
     public function updateActiveStatus(array $updates) {
         $templateId = $updates['emailtemplateid'];
         unset($updates['emailtemplateid']);
@@ -220,4 +223,6 @@ class EmailBuilder_model extends App_Model {
     public function send_email_template($template_slug, $email, $merge_fields, $ticketid = '', $cc = '') {
         return $this->emails_model->send_email_template($template_slug, $email, $merge_fields, $ticketid, $cc);
     }
+
+
 }

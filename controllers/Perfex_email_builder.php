@@ -195,12 +195,21 @@ class Perfex_email_builder extends AdminController {
     }
 
     public function update_widget(){
-      if (!has_permission('email_templates', '', 'view')) {
+      if (!has_permission('email_templates', '', 'edit')) {
             access_denied('email_templates');
       }
       if($this->input->post()){
         $data = $this->input->post();
         $success = $this->emailBuilder_model->update_widget($data);
+        return $this->json_output(['success' => $success]);
+      }
+    }
+    public function remove_widget($id){
+      if (!has_permission('email_templates', '', 'delete')) {
+            access_denied('email_templates');
+      }
+      if($id){
+        $success = $this->emailBuilder_model->remove_widget($id);
         return $this->json_output(['success' => $success]);
       }
     }
