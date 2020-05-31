@@ -8,8 +8,8 @@
             <div class="col-md-3">
                 <ul class="nav navbar-pills navbar-pills-flat nav-tabs nav-stacked">
                     <li class="active"><a href="<?php echo admin_url(EMAIL_BUILDER_MODULE_NAME . '/options'); ?>"><?php echo _l('general'); ?></a></li>
-                    <li><a href="<?php echo admin_url(EMAIL_BUILDER_MODULE_NAME . '/options?group=admin_code'); ?>" ><?php echo _l('inject_code_admin'); ?> (In Development)</a></li>
-                    <li><a href="<?php echo admin_url(EMAIL_BUILDER_MODULE_NAME . '/options?group=client_code'); ?>" ><?php echo _l('inject_code_client'); ?> (In Development)</a></li>
+                    <li><a href="<?php echo admin_url(EMAIL_BUILDER_MODULE_NAME . '/options?group=admin_code'); ?>" ><?php echo _l('inject_code_admin'); ?></a></li>
+                    <li><a href="<?php echo admin_url(EMAIL_BUILDER_MODULE_NAME . '/options?group=client_code'); ?>" ><?php echo _l('inject_code_client'); ?></a></li>
                 </ul>
             </div>
             <div class="col-md-9">
