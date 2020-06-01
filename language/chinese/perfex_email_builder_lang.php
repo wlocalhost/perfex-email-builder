@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = '管理员自定义样式';
 $lang['email_builder_admin_custom_js'] = '管理员自定义JS';
 $lang['email_builder_client_custom_css'] = '客户自定义样式';
 $lang['email_builder_client_custom_js'] = '客户自定义JS';
+$lang['purchase_code']   = '购买代码';

@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'Yönetici Özel Stilleri';
 $lang['email_builder_admin_custom_js'] = 'Yönetici Özel JS';
 $lang['email_builder_client_custom_css'] = 'İstemci Özel Stilleri';
 $lang['email_builder_client_custom_js'] = 'İstemci Özel JS';
+$lang['purchase_code']   = 'Satın alma kodu';

@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'Správce vlastních stylů';
 $lang['email_builder_admin_custom_js'] = 'Správce vlastní JS';
 $lang['email_builder_client_custom_css'] = 'Vlastní styly klienta';
 $lang['email_builder_client_custom_js'] = 'Vlastní klient JS';
+$lang['purchase_code']   = 'Kód nákupu';

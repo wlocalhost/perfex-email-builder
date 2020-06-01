@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = '管理カスタムスタイル';
 $lang['email_builder_admin_custom_js'] = '管理カスタムJS';
 $lang['email_builder_client_custom_css'] = 'クライアントのカスタムスタイル';
 $lang['email_builder_client_custom_js'] = 'クライアントカスタムJS';
+$lang['purchase_code']   = '購入コード';

@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'سبک های سفارشی مدیر';
 $lang['email_builder_admin_custom_js'] = 'مدیر سفارشی JS';
 $lang['email_builder_client_custom_css'] = 'سبک های سفارشی مشتری';
 $lang['email_builder_client_custom_js'] = 'مشتری سفارشی JS';
+$lang['purchase_code']   = 'کد خرید';

@@ -1,5 +1,9 @@
 <?php echo form_open('', ['id' => 'saveEmailBuilderOptions']); ?>
     <div class="form-group">
+        <label for="_default_media_folder"><?php echo _l('purchase_code'); ?></label>
+        <input required type="text" name="perfex_email_builder_purchase_code" id="perfex_email_builder_purchase_code" value="<?php echo get_option('perfex_email_builder_purchase_code'); ?>" class="form-control" />
+    </div>
+    <div class="form-group">
         <label for="_default_media_folder"><?php echo _l('default_media_folder'); ?></label>
         <input required type="text" name="default_media_folder" id="_default_media_folder" value="<?php echo get_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder'); ?>" class="form-control" />
     </div>

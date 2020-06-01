@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'Admin beställnings stilar';
 $lang['email_builder_admin_custom_js'] = 'Admin beställnings JS';
 $lang['email_builder_client_custom_css'] = 'Kundens anpassade stilar';
 $lang['email_builder_client_custom_js'] = 'Kundanpassad JS';
+$lang['purchase_code']   = 'Köpskod';

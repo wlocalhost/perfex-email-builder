@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'Beheer aangepaste stijlen';
 $lang['email_builder_admin_custom_js'] = 'Beheer aangepaste JS';
 $lang['email_builder_client_custom_css'] = 'Cliënt aangepaste stijlen';
 $lang['email_builder_client_custom_js'] = 'Cliënt aangepaste JS';
+$lang['purchase_code']   = 'Aankoopcode';

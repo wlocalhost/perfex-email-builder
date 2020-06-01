@@ -8,6 +8,7 @@ add_option('perfex_email_builder_admin_custom_js', '');
 add_option('perfex_email_builder_admin_custom_css', '');
 add_option('perfex_email_builder_client_custom_js', '');
 add_option('perfex_email_builder_client_custom_css', '');
+add_option('perfex_email_builder_purchase_code', '');
 
 add_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder', EMAIL_BUILDER_MODULE_NAME);
 update_option('email_header', '<!-- Handled by Perfex Email Builder, any way you can edit it here: ' . admin_url(EMAIL_BUILDER_MODULE_NAME . '/options') . ' -->');

@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'Gaya Kustom Admin';
 $lang['email_builder_admin_custom_js'] = 'Admin Kustom JS';
 $lang['email_builder_client_custom_css'] = 'Gaya Kustom Klien';
 $lang['email_builder_client_custom_js'] = 'JS Kustom Klien';
+$lang['purchase_code']   = 'Kode Pembelian';

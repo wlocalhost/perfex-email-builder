@@ -92,6 +92,7 @@ class Perfex_email_builder extends AdminController {
               *update general options
               */
               update_option(EMAIL_BUILDER_MODULE_NAME . '_default_media_folder', $this->input->post('default_media_folder'));
+              update_option('perfex_email_builder_purchase_code', $this->input->post('perfex_email_builder_purchase_code'));
               update_option('old_email_header', html_entity_decode($options['old_email_header']));
               update_option('old_email_footer', html_entity_decode($options['old_email_footer']));
               $status = _l('options_updated');
@@ -195,7 +196,7 @@ class Perfex_email_builder extends AdminController {
     }
 
     public function update_widget(){
-      if (!has_permission('email_templates', '', 'edit')) {
+      if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
       }
       if($this->input->post()){
@@ -205,10 +206,11 @@ class Perfex_email_builder extends AdminController {
       }
     }
     public function remove_widget($id){
-      if (!has_permission('email_templates', '', 'delete')) {
+      if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
       }
       if($id){
+        $data = $this->input->post();
         $success = $this->emailBuilder_model->remove_widget($id);
         return $this->json_output(['success' => $success]);
       }

@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'Stili personalizzati dell\'amministra
 $lang['email_builder_admin_custom_js'] = 'Admin Custom JS';
 $lang['email_builder_client_custom_css'] = 'Stili personalizzati del cliente';
 $lang['email_builder_client_custom_js'] = 'Client personalizzato JS';
+$lang['purchase_code']   = 'Codice d\'acquisto';

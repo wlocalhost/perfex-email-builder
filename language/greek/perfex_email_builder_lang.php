@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'Προσαρμοσμένα στυλ �
 $lang['email_builder_admin_custom_js'] = 'Προσαρμοσμένο JS διαχειριστή';
 $lang['email_builder_client_custom_css'] = 'Προσαρμοσμένα στυλ πελάτη';
 $lang['email_builder_client_custom_js'] = 'Πελάτης Custom JS';
+$lang['purchase_code']   = 'Κωδικός αγοράς';

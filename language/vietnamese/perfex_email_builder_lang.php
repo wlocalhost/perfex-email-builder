@@ -20,3 +20,4 @@ $lang['email_builder_admin_custom_css'] = 'Kiểu tùy chỉnh của quản tr�
 $lang['email_builder_admin_custom_js'] = 'Quản trị viên tùy chỉnh JS';
 $lang['email_builder_client_custom_css'] = 'Kiểu khách hàng tùy chỉnh';
 $lang['email_builder_client_custom_js'] = 'Mã tùy chỉnh máy khách';
+$lang['purchase_code']   = 'Mã mua hàng';
