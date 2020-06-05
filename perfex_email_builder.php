@@ -8,7 +8,7 @@ Module URI: https://codecanyon.net/item/drag-and-drop-perfex-crm-email-builder/2
 Author: Ion Prodan
 Author URI: https://yon.fun?utm_source=perfex-module
 Description: Beautiful e-mail templates, with no design experience needed.
-Version: 2.0.1
+Version: 2.0.2
 Requires at least: 2.4.*
 */
 

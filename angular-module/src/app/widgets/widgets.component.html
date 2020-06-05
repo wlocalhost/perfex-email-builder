@@ -1,0 +1,39 @@
+<mat-sidenav-container style="width: 100%;">
+  <mat-sidenav-content>
+    <div fxLayout="column wrap" fxLayoutAlign="top center" fxLayoutGap="1rem" class="mat-typography">
+      <mat-toolbar class="mat-elevation-z2">
+        <!-- <mat-progress-bar mode="indeterminate" style="position: absolute;" *ngIf="res.isLoading$ | async">
+        </mat-progress-bar> -->
+        <mat-toolbar-row>
+          <h1>Email Widgets</h1>
+          <!-- <div style="margin-left: auto;" fxLayout fxLayoutGap="1rem">
+            <button mat-flat-button color="primary" class="capitalize" *ngIf="getActiveLanguage$ | async as activeLang">
+              {{ activeLang }}
+            </button>
+            <button mat-flat-button [matMenuTriggerFor]="langMenu" [disabled]="res.isLoading$ | async">
+              Other languages
+            </button>
+            <mat-menu #langMenu="matMenu">
+              <ng-template matMenuContent *ngIf="languages$ | async as languages">
+                <ng-container *ngFor="let lang of languages">
+                  <button mat-menu-item class="capitalize" (click)="changeLanguage(lang)">
+                    {{ lang | keyToLang }}
+                  </button>
+                </ng-container>
+              </ng-template>
+            </mat-menu>
+          </div> -->
+        </mat-toolbar-row>
+      </mat-toolbar>
+      <div style="padding: 1rem;max-width: 1400px;width: 100%;box-sizing: border-box;" fxLayout="column"
+        fxLayoutGap="1rem">
+        WIdgets
+      </div>
+    </div>
+  </mat-sidenav-content>
+  <mat-sidenav #sidenav position="end" disableClose style="width: 1200px; max-width: 80%;">
+
+    fdfdf
+
+  </mat-sidenav>
+</mat-sidenav-container>

@@ -86,7 +86,8 @@ class EmailBuilder_model extends App_Model {
             if ($key) {
                 $item['updated_at'] = $savedItems[$key]['updated_at'];
             }
-            $templates[_l($type)][] = $item;
+            // $item['translated_type'] = _l($type);
+            $templates[$type][] = $item;
         }
         return $templates;
     }
@@ -165,26 +166,31 @@ class EmailBuilder_model extends App_Model {
     public function update_widget(array $data){
         $module = json_encode(json_decode($data['module']));
 
-        $this->db->where('id', $data['widget_id']);
+        $this->db->where('id', $data['id']);
         if ($this->db->get($this->emailwidgetTable)->row()) {
-            $this->db->where('id', $data['widget_id']);
+            $this->db->where('id', $data['id']);
             $success = $this->db->update($this->emailwidgetTable, [
-                'name' => $data['name'], 
+                'name' => $data['name'],
                 'module' => $module,
             ]);
         } else {
             $success = $this->db->insert($this->emailwidgetTable, [
-                'name' => $data['name'], 
+                'name' => $data['name'],
                 'module' => $module,
-                'created_at' =>date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s')
             ]);
         }
         return $success;
     }
 
+    public function get_all_widgets(){
+        return $this->db->get($this->emailwidgetTable)->result_array();
+    }
+
     public function remove_widget($id){
         return $this->db->where('id', $id)->delete($this->emailwidgetTable);
     }
+
     public function updateActiveStatus(array $updates) {
         $templateId = $updates['emailtemplateid'];
         unset($updates['emailtemplateid']);
@@ -223,6 +229,4 @@ class EmailBuilder_model extends App_Model {
     public function send_email_template($template_slug, $email, $merge_fields, $ticketid = '', $cc = '') {
         return $this->emails_model->send_email_template($template_slug, $email, $merge_fields, $ticketid, $cc);
     }
-
-
 }

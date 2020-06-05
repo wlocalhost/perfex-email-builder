@@ -7,6 +7,7 @@
       baseUrl: "<?php echo base_url('/admin/' . EMAIL_BUILDER_MODULE_NAME) ?>",
       mount: 'templates',
       activeLanguage: '<?php echo $active_language; ?>',
+      purchaseCode: "<?php echo $purchase_code ?>",
       csrf: {
         token: '<?php echo $this->security->get_csrf_hash(); ?>',
         name: '<?php echo $this->security->get_csrf_token_name(); ?>'

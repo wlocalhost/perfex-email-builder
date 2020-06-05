@@ -26,6 +26,9 @@ export class AppComponent {
     if (mount === 'campaigns') {
       const { CampaignsComponent } = await import('./campaigns/campaigns.component');
       component = this.componentFactory.resolveComponentFactory(CampaignsComponent);
+    } else if (mount === 'widgets') {
+      const { WidgetsComponent } = await import('./widgets/widgets.component');
+      component = this.componentFactory.resolveComponentFactory(WidgetsComponent);
     } else {
       const { TemplatesComponent } = await import('./templates/templates.component');
       component = this.componentFactory.resolveComponentFactory(TemplatesComponent);

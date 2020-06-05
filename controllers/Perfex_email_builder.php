@@ -24,6 +24,7 @@ class Perfex_email_builder extends AdminController {
 
         $data['title'] = _l(EMAIL_BUILDER_MODULE_NAME);
         $data['active_language'] = get_option('active_language');
+        $data['purchase_code'] = get_option('purchase_code');
 
         hooks()->add_action('app_admin_head', 'perfex_email_builder_head_styles');
         hooks()->add_action('app_admin_footer', 'perfex_email_builder_footer_scripts');
@@ -195,7 +196,12 @@ class Perfex_email_builder extends AdminController {
         }
     }
 
-    public function update_widget(){
+    public function getAllWidgets() {
+      $widgets = $this->emailBuilder_model->get_all_widgets();
+      return $this->json_output($widgets);
+    }
+
+    public function updateWidget(){
       if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
       }
@@ -205,12 +211,13 @@ class Perfex_email_builder extends AdminController {
         return $this->json_output(['success' => $success]);
       }
     }
-    public function remove_widget($id){
+
+    public function removeWidget($id){
       if (!has_permission('email_templates', '', 'view')) {
             access_denied('email_templates');
       }
       if($id){
-        $data = $this->input->post();
+        // $data = $this->input->post();
         $success = $this->emailBuilder_model->remove_widget($id);
         return $this->json_output(['success' => $success]);
       }

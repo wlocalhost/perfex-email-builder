@@ -3,9 +3,13 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { throwError, Subject, of } from 'rxjs';
 import { catchError, map, finalize, tap, shareReplay } from 'rxjs/operators';
-import { IPEmail, Structure, TextBlock } from 'ip-email-builder';
+import { IPEmail, Structure, TextBlock, ICustomModule } from 'ip-email-builder';
 
 import { IParams, IPreview, IPerfexEmail, IServerTemplateResponse, TMethod, IMergeField } from '../interfaces';
+
+export interface ICustomModuleWithId extends ICustomModule {
+  id: number
+}
 
 @Injectable({
   providedIn: 'any'
@@ -82,6 +86,26 @@ export class ResourceService {
     return this.httpRequest<IMergeField[]>('mergeFields', { type }).pipe(
       catchError(() => of([] as IMergeField[]))
     );
+  }
+
+  getAllWidgets() {
+    return this.httpRequest<ICustomModuleWithId[]>('getAllWidgets')
+  }
+
+  updateWidget(widget: ICustomModuleWithId) {
+    const formData = new FormData()
+    formData.append('widget', JSON.stringify(widget))
+    return this.sendPostRequest<ICustomModuleWithId>(formData, 'updateWidget')
+  }
+
+  addNewWidget(widget: ICustomModule) {
+    const formData = new FormData()
+    formData.append('widget', JSON.stringify(widget))
+    return this.sendPostRequest<ICustomModuleWithId>(formData, 'updateWidget')
+  }
+
+  removeWidget(id: number) {
+    return this.httpRequest<{ status: boolean }>(`removeWidget/${id}`)
   }
 
   sendPostRequest<T>(body = new FormData(), path: string) {

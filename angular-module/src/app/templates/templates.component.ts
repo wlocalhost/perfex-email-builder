@@ -1,9 +1,10 @@
 import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { BehaviorSubject, of, Subject, fromEvent, EMPTY, from, forkJoin, combineLatest, generate } from 'rxjs';
-import { tap, exhaustMap, map, takeUntil, take, catchError, finalize, switchMap, filter, delay } from 'rxjs/operators';
+import { BehaviorSubject, of, Subject, fromEvent, EMPTY, forkJoin, combineLatest, animationFrameScheduler } from 'rxjs';
+import { tap, exhaustMap, map, takeUntil, take, catchError, finalize, switchMap, filter, subscribeOn } from 'rxjs/operators';
 import { IPEmail, IpEmailBuilderService, Structure, TextBlock } from 'ip-email-builder';
 
 import { IPreview, IPerfexEmail, IPostRespose, ISaveDetailsResponse } from '../../interfaces';
@@ -39,11 +40,14 @@ export class TemplatesComponent implements OnInit, OnDestroy {
   private removeUpdatedStore = new Set<string>();
 
   displayedColumns = ['active', 'name', 'subject', 'actions'];
+  pKey = globalThis.NGB.purchaseCode;
+  baseUrl = globalThis.NGB.baseUrl;
 
   constructor(
     public res: ResourceService,
     private ngb: IpEmailBuilderService,
     private dialog: MatDialog,
+    private snack: MatSnackBar,
     private el: ElementRef,
   ) { }
 
@@ -74,8 +78,14 @@ export class TemplatesComponent implements OnInit, OnDestroy {
    * Open sidenav to edit current email
    */
   private getTemplateObject$ = this.editTemplateObject$.pipe(
+    subscribeOn(animationFrameScheduler),
     exhaustMap(editElementInfo => {
-      if (!editElementInfo) { return of(null); }
+      if (!this.pKey) {
+        this.snack.open('Please provide the purchase code before editing any templates.', null, {
+          duration: 10000
+        })
+      }
+      if (!this.pKey || !editElementInfo) { return of(null); }
       return forkJoin([
         this.res.getTemplate(editElementInfo.id),
         this.res.getAllMergeFields(editElementInfo.type),
@@ -104,6 +114,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
    * Get preview template
    */
   private getPreviewTemplate$ = this.previewTemplate$.pipe(
+    subscribeOn(animationFrameScheduler),
     exhaustMap(editElementInfo => {
       if (!editElementInfo) return of(null);
       return this.res.getTemplateBody(editElementInfo.id).pipe(
@@ -118,11 +129,11 @@ export class TemplatesComponent implements OnInit, OnDestroy {
   );
 
   sidenavDetails$ = combineLatest([this.getTemplateObject$, this.getPreviewTemplate$]).pipe(
+    subscribeOn(animationFrameScheduler),
     map(([editEmail, previewTemplate]) => editEmail || previewTemplate)
   )
 
   // All methods
-
   changeLanguage(lang: string) {
     this.activeLanguage$.next(lang)
   }
@@ -150,20 +161,17 @@ export class TemplatesComponent implements OnInit, OnDestroy {
       // finalize(() => {
       //   this.previewTemplate$.next(null);
       // }),
-      exhaustMap(state => {
-        if (state) {
-          return from(this.sidenav.close()).pipe(
-            // finalize(() => this.editTemplateObject$.next(null)),
-            map(() => true)
-          )
-        }
-        return of(false);
-      })
+      tap(state => state && this.sidenav.close())
     )
   }
 
   backdropClick() {
-    return this.closeSidenav().pipe(take(1)).subscribe()
+    return this.closeSidenav().pipe(take(1)).subscribe(isClosed => {
+      if (isClosed) {
+        this.editTemplateObject$.next(null)
+        this.previewTemplate$.next(null)
+      }
+    })
   }
 
   getUpdatedDate(element: IPerfexEmail) {

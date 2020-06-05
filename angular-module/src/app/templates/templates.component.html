@@ -25,7 +25,11 @@
           </div>
         </mat-toolbar-row>
       </mat-toolbar>
-      <div style="padding: 1rem;max-width: 1400px;width: 100%;box-sizing: border-box;">
+      <div style="padding: 1rem;max-width: 1400px;width: 100%;box-sizing: border-box;" fxLayout="column"
+        fxLayoutGap="1rem">
+        <div class="alert alert-danger" fxFlex *ngIf="!pKey">
+          Please add <a [href]="baseUrl + '/options'">Purchase Code</a> to the options page to use this builder.
+        </div>
         <mat-accordion fxFlex>
           <mat-expansion-panel *ngFor="let item of getTemplates$ | async | keyvalue"
             [expanded]="item.key === expansionPanelOpen()" (opened)="expansionPanelOpen(item.key)">
@@ -152,29 +156,6 @@
         </ip-email-builder>
       </ng-container>
     </ng-container>
-
-    <!-- <ng-container *ngIf="getTemplateObject$ | async as data">
-      <mat-toolbar color="primary">
-        <mat-toolbar-row>
-          <span>{{ data.name }}</span>
-          <div style="margin-left: auto;" fxLayoutGap="0.5rem">
-            <button mat-flat-button color="accent" (click)="saveEmail(data)">
-              Save
-            </button>
-            <button mat-flat-button color="accent" (click)="backdropClick()">
-              Close Builder
-            </button>
-          </div>
-        </mat-toolbar-row>
-      </mat-toolbar>
-      <ip-email-builder style="height: inherit;" [email]="data.template">
-        <div class=" top-actions">
-          <button mat-flat-button color="accent" (click)="revertTemplateBack()">
-            Restore template
-          </button>
-        </div>
-      </ip-email-builder>
-    </ng-container> -->
 
   </mat-sidenav>
 </mat-sidenav-container>

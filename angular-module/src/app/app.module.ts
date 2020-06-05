@@ -22,6 +22,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { IpEmailBuilderModule } from 'ip-email-builder';
 
 import { KeyToLangPipe } from './key-to-lang.pipe';
@@ -29,6 +30,8 @@ import { AppComponent } from './app.component';
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { TemplatesComponent } from './templates/templates.component';
 import { CampaignsComponent } from './campaigns/campaigns.component';
+import { PurchaseCodeInjectorService } from './purchase-code-injector.service';
+import { WidgetsComponent } from './widgets/widgets.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,8 @@ import { CampaignsComponent } from './campaigns/campaigns.component';
     ModalDialogComponent,
     KeyToLangPipe,
     TemplatesComponent,
-    CampaignsComponent
+    CampaignsComponent,
+    WidgetsComponent
   ],
   entryComponents: [ModalDialogComponent, TemplatesComponent],
   imports: [
@@ -75,6 +79,11 @@ import { CampaignsComponent } from './campaigns/campaigns.component';
       templateListIfEmpty: false
     })
   ],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: PurchaseCodeInjectorService,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
